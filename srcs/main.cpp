@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jekim <jekim@student.42seoul.kr>           +#+  +:+       +#+        */
+/*   By: jekim <jekim@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 00:57:20 by jekim             #+#    #+#             */
-/*   Updated: 2022/07/06 16:40:01 by jekim            ###   ########.fr       */
+/*   Updated: 2022/07/09 17:39:59 by jekim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <map>
 #include <list>
 #include <iostream>
+#include <vector>
 
 int main (void) {
     // write testcases for ft::vector
