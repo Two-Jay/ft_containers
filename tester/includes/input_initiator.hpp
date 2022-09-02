@@ -55,11 +55,11 @@ struct string_bucket {
 };
 
 struct Test_inputs{
-    struct int_bucket* int_bucket;
-    struct char_bucket* char_bucket;
-    struct double_bucket* double_bucket;
-    struct string_bucket* string_bucket;
-    struct float_bucket* float_bucket;
+    struct int_bucket int_bucket;
+    struct char_bucket char_bucket;
+    struct double_bucket double_bucket;
+    struct string_bucket string_bucket;
+    struct float_bucket float_bucket;
 };
 
 std::string generate_rand_string(void) {
@@ -125,70 +125,70 @@ class Input_initiator {
         Test_inputs create_inputs_rand(test_dataType_all) {
             Test_inputs ret;
 
-            ret.char_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_char);
-            ret.char_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_char);
-            ret.char_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_char);
             
-            ret.int_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_int);
-            ret.int_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_int);
-            ret.int_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_int);
 
-            ret.string_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_string);
-            ret.string_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_string);
-            ret.string_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_string);
             
-            ret.double_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_double);
-            ret.double_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_double);
-            ret.double_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_double);
             
-            ret.float_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_float);
-            ret.float_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_float);
-            ret.float_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_float);
             return ret;
         };
 
         template<class T>
         Test_inputs create_inputs_rand(test_dataType_int) {
             Test_inputs ret;
-            ret.int_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_int);
-            ret.int_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_int);
-            ret.int_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_int);
             return ret;
         };
 
         template<class T>
         Test_inputs create_inputs_rand(test_dataType_char) {
             Test_inputs ret;
-            ret.char_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_char);
-            ret.char_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_char);
-            ret.char_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_char);
             return ret;
         };
 
         template<class T>
         Test_inputs create_inputs_rand(test_dataType_string) {
             Test_inputs ret;
-            ret.string_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_string);
-            ret.string_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_string);
-            ret.string_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_string);
             return ret;
         };
 
         template<class T>
         Test_inputs create_inputs_rand(test_dataType_float) {
             Test_inputs ret;
-            ret.float_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_float);
-            ret.float_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_float);
-            ret.float_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_float);
             return ret;
         };
 
         template<class T>
         Test_inputs create_inputs_rand(test_dataType_double) {
             Test_inputs ret;
-            ret.double_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_double);
-            ret.double_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_double);
-            ret.double_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket.short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket.mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket.long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_double);
             return ret;
         };
 };
