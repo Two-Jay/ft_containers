@@ -4,6 +4,8 @@
 #include <ctime>
 #include <vector>
 #include <iostream>
+#include <limits.h>
+#include <float.h>
 
 #define SHORT_INPUTS_SIZE 10
 #define MID_INPUTS_SIZE 256
@@ -57,10 +59,10 @@ struct Test_inputs{
     struct char_bucket* char_bucket;
     struct double_bucket* double_bucket;
     struct string_bucket* string_bucket;
-    struct float_bucket* float_bucekt;
+    struct float_bucket* float_bucket;
 };
 
-static std::string generate_rand_string(void) {
+std::string generate_rand_string(void) {
     std::string ret = "";
     // TEST_STRING_ELEMENT_LENGTH is defined in top of this header file;
     for (size_t i  = 0; i < TEST_STRING_ELEMENT_LENGTH; i++) {
@@ -69,53 +71,41 @@ static std::string generate_rand_string(void) {
     return ret;
 };
 
-// template<>
-// std::vector<char> fill_rand<char>(size_t size) {
-//     std::vector<char> ret;
-//     for (size_t i = 0; i < size; i++) {
-//         ret.append(static_cast<char>(33 + (std::rand() % 107))); // filled by 33 (!) to 126 (~)
-//     }
-//     return ret;
-// };
+int generate_rand_int(void) {
+    return std::rand() % TEST_INT_ELEMENT_LIMIT;
+}
 
-std::vector<std::string> fill_rand(size_t size, test_dataType_string) {
-    std::vector<std::string> ret;
-    for (size_t i = 0; i < size; i++) {
-        ret.push_back(generate_rand_string());
+char generate_rand_char(void) {
+    return 33 + (std::rand() % 107); // filled by 33 (!) to 126 (~)
+}
+
+float generate_rand_float(void) {
+    float FLOAT_MIN = std::numeric_limits<float>::min();
+    float FLOAT_MAX = std::numeric_limits<float>::max();
+    float low = FLOAT_MIN > (TEST_FLOAT_ELEMENT_LIMIT * -1) ? FLOAT_MIN : TEST_FLOAT_ELEMENT_LIMIT * -1;
+    float high = FLOAT_MAX < TEST_FLOAT_ELEMENT_LIMIT ? FLOAT_MAX : TEST_FLOAT_ELEMENT_LIMIT;
+    
+    return low + static_cast<float>(std::rand()) * static_cast<float>(high - low) / RAND_MAX;
+}
+
+double generate_rand_double(void) {
+    double DOUBLE_MIN = std::numeric_limits<double>::min();
+    double DOUBLE_MAX = std::numeric_limits<double>::max();
+    double low = DOUBLE_MIN > (TEST_DOUBLE_ELEMENT_LIMIT * -1) ? DOUBLE_MIN : TEST_DOUBLE_ELEMENT_LIMIT * -1;
+    double high = DOUBLE_MAX < TEST_DOUBLE_ELEMENT_LIMIT ? DOUBLE_MAX : TEST_DOUBLE_ELEMENT_LIMIT;
+    
+    return low + static_cast<double>(std::rand()) * static_cast<double>(high - low) / RAND_MAX;
+}
+
+template <class T>
+std::vector<T> build_vector(std::size_t size, T (*fptr_generate_elem)(void)) {
+    std::vector<T> ret;
+    for (std::size_t i = 0; i < size; i++) {
+        ret.push_back(fptr_generate_elem());
     }
     return ret;
-};
+}
 
-std::vector<int> fill_rand(size_t size, test_dataType_int) {
-    std::vector<int> ret;
-    for (size_t i = 0; i < size; i++) {
-        ret.push_back(std::rand() % TEST_INT_ELEMENT_LIMIT);
-    }
-    return ret;
-};
-
-// std::vector<float> fill_rand<float>(size_t size) {
-//     std::vector<float> ret;
-//     int low = 0;
-//     int high = TEST_FLOAT_ELEMENT_LIMIT;
-//     for (size_t i = 0; i < size; i++) {
-//         float rand = low + static_cast<float>(std::rand()) * static_cast<float>(high - low) / RAND_MAX;
-//         ret.append(rand);
-//     }
-//     return ret;
-// };
-
-// template<>
-// std::vector<double> fill_rand<double>(size_t size) {
-//     std::vector<double> ret;
-//     int low = 0;
-//     int high = TEST_DOUBLE_ELEMENT_LIMIT;
-//     for (size_t i = 0; i < size; i++) {
-//         double rand = low + static_cast<double>(std::rand()) * static_cast<double>(high - low) / RAND_MAX;
-//         ret.append(rand);
-//     }
-//     return ret;
-// };
 
 class Input_initiator {
     private :
@@ -132,50 +122,75 @@ class Input_initiator {
             std::srand(std::time(nullptr));
         };
 
-        template<class T>
-        Test_inputs create_inputs_rand(T) {
-            Test_inputs ret;
-            return ret;
-        };
-
-        template<class T>
         Test_inputs create_inputs_rand(test_dataType_all) {
             Test_inputs ret;
 
-            ret.int_bucket->short_inputs = fill_rand(SHORT_INPUTS_SIZE, test_dataType_int());
-            ret.int_bucket->mid_inputs = fill_rand(MID_INPUTS_SIZE, test_dataType_int());
-            ret.int_bucket->long_inputs = fill_rand(LONG_INPUTS_SIZE, test_dataType_int());
+            ret.char_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_char);
+            
+            ret.int_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_int);
+
+            ret.string_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_string);
+            
+            ret.double_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_double);
+            
+            ret.float_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_float);
             return ret;
         };
 
         template<class T>
         Test_inputs create_inputs_rand(test_dataType_int) {
             Test_inputs ret;
+            ret.int_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_int);
+            ret.int_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_int);
+            return ret;
+        };
 
-            ret.int_bucket->short_inputs = fill_rand(SHORT_INPUTS_SIZE, test_dataType_int());
-            ret.int_bucket->mid_inputs = fill_rand(MID_INPUTS_SIZE, test_dataType_int());
-            ret.int_bucket->long_inputs = fill_rand(LONG_INPUTS_SIZE, test_dataType_int());
+        template<class T>
+        Test_inputs create_inputs_rand(test_dataType_char) {
+            Test_inputs ret;
+            ret.char_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_char);
+            ret.char_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_char);
+            return ret;
+        };
+
+        template<class T>
+        Test_inputs create_inputs_rand(test_dataType_string) {
+            Test_inputs ret;
+            ret.string_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_string);
+            ret.string_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_string);
+            return ret;
+        };
+
+        template<class T>
+        Test_inputs create_inputs_rand(test_dataType_float) {
+            Test_inputs ret;
+            ret.float_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_float);
+            ret.float_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_float);
+            return ret;
+        };
+
+        template<class T>
+        Test_inputs create_inputs_rand(test_dataType_double) {
+            Test_inputs ret;
+            ret.double_bucket->short_inputs = build_vector(SHORT_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket->mid_inputs = build_vector(MID_INPUTS_SIZE, generate_rand_double);
+            ret.double_bucket->long_inputs = build_vector(LONG_INPUTS_SIZE, generate_rand_double);
             return ret;
         };
 };
-
-// std::ostream& operator<< (std::ostream& os, int_bucket& ib) {
-//     os << "[short int_list] : [";
-//     for (size_t i = 0; i < SHORT_INPUTS_SIZE; i++) {
-//         os << ib.short_inputs[i] << " ";
-//     }
-//     os << "]\n";
-//     os << "[mid int_list] : [";
-//     for (size_t i = 0; i < MID_INPUTS_SIZE; i++) {
-//         os << ib.mid_inputs[i] << " ";
-//     }
-//     os << "]\n";
-//     os << "[long int_list] : [";
-//     for (size_t i = 0; i < LONG_INPUTS_SIZE; i++) {
-//         os << ib.long_inputs[i] << " ";
-//     }
-//     os << "]\n";
-//     return os;
-// }
 
 #endif // __INPUT_INITIATOR_HPP__
