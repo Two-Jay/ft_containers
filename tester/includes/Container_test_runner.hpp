@@ -1,20 +1,25 @@
 #ifndef __CONTAINER_TEST_RUNNER__
 #define __CONTAINER_TEST_RUNNER__
 
+#include "input_initiator.hpp"
+
 struct testType_shortCase {};
 struct testType_midCase {};
 struct testType_longCase {};
 
 class Container_test_runner {
     private :
-        
+        const Test_inputs& inputs;
+        Container_test_runner() {};    
     public :
-        Container_tester() {}; 
-        ~Container_tester() {};
-        Container_tester& operator= (const Container_tester& rhs) {
+        Container_test_runner(Test_inputs& inputs) {
+            this.inputs = inputs;
+        }
+        virtual ~Container_test_runner() {};
+        Container_test_runner& operator= (const Container_test_runner& rhs) {
             ;
         };
-        Container_tester(const Container_tester& other) {
+        Container_test_runner(const Container_test_runner& other) {
             return *this;
         };
 
