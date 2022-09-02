@@ -14,6 +14,14 @@
 #define TEST_FLOAT_ELEMENT_LIMIT 10000
 #define TEST_DOUBLE_ELEMENT_LIMIT 10000
 
+struct test_dataType_all {};
+struct test_dataType_char {};
+struct test_dataType_int {};
+struct test_dataType_float {};
+struct test_dataType_double {};
+struct test_dataType_string {};
+
+
 struct char_bucket {
     std::vector<char> short_inputs;
     std::vector<char> mid_inputs;
@@ -22,7 +30,7 @@ struct char_bucket {
 
 struct int_bucket {
     std::vector<int> short_inputs;
-    std::vector<int> mid_inputsid_inputs;
+    std::vector<int> mid_inputs;
     std::vector<int> long_inputs;
 };
 
@@ -45,15 +53,15 @@ struct string_bucket {
 };
 
 struct Test_inputs{
-    struct int_bucket& int_bucket;
-    struct char_bucket& char_bucket;
-    struct double_bucket& double_bucket;
-    struct string_bucket& string_bucket;
-    struct float_bucket& float_bucekt;
+    struct int_bucket* int_bucket;
+    struct char_bucket* char_bucket;
+    struct double_bucket* double_bucket;
+    struct string_bucket* string_bucket;
+    struct float_bucket* float_bucekt;
 };
 
-static std::string& generate_rand_string(void) {
-    std::string ret = std::string("");
+static std::string generate_rand_string(void) {
+    std::string ret = "";
     // TEST_STRING_ELEMENT_LENGTH is defined in top of this header file;
     for (size_t i  = 0; i < TEST_STRING_ELEMENT_LENGTH; i++) {
         ret += (33 + (std::rand() % 107)); // filled by 33 (!) to 126 (~)
@@ -62,18 +70,18 @@ static std::string& generate_rand_string(void) {
 };
 
 template<class T>
-std::vector<T> fill_rand<T>(size_t size) {
+std::vector<T>& fill_rand<T>(size_t size) {
     (void) size;
     // this is origin definition for explicit specialization
     // define fill_rand by datatype you want as below
-    return NULL;
+    return std::vector<T>();
 };
 
 // template<>
 // std::vector<char> fill_rand<char>(size_t size) {
 //     std::vector<char> ret;
 //     for (size_t i = 0; i < size; i++) {
-//         ret.append(33 + (std::rand() % 107)); // filled by 33 (!) to 126 (~)
+//         ret.append(static_cast<char>(33 + (std::rand() % 107))); // filled by 33 (!) to 126 (~)
 //     }
 //     return ret;
 // };
@@ -87,11 +95,11 @@ std::vector<T> fill_rand<T>(size_t size) {
 //     return ret;
 // };
 
-template<>
-std::vector<int> fill_rand<int>(size_t size) {
+template<class T>
+std::vector<int> fill_rand(size_t size, test_dataType_int) {
     std::vector<int> ret;
     for (size_t i = 0; i < size; i++) {
-        ret.append(std::rand() % TEST_INT_ELEMENT_LIMIT);
+        ret.push_back(std::rand() % TEST_INT_ELEMENT_LIMIT);
     }
     return ret;
 };
@@ -122,53 +130,62 @@ std::vector<int> fill_rand<int>(size_t size) {
 
 class Input_initiator {
     private :
-        Input_initiator(const Input_initiator& other) {};
-        Input_initiator& operator= (const Input_initiator& rhs) {};
+        Input_initiator(const Input_initiator& other) {
+            (void) other;
+        };
+        Input_initiator& operator= (const Input_initiator& rhs) {
+            (void) rhs;
+            return *this;
+        };
     
     public :
         Input_initiator() {
             std::srand(std::time(nullptr));
         };
 
-        template<T>
-        Test_inputs& create_inputs_rand(void) {
-            struct Test_inputs& ret = new input_list_bucket();
-            ret.int_bucket = create_inputs_rand<int>();
+        template<class T>
+        Test_inputs create_inputs_rand<T>(void) {
+            Test_inputs ret;
             return ret;
         };
 
-        template<>
-        int_bucket& create_inputs_rand<int>(void) {
-            struct int_bucket& ret = new int_bucket;
-            ret.short_inputs = fill_rand<int>(SHORT_INPUTS_SIZE);
-            ret.mid_inputs = fill_rand<int>(MID_INPUTS_SIZE);
-            ret.long_inputs = fill_rand<int>(LONG_INPUTS_SIZE);
-            return ret;
-        }
-        
-        std::ostream& operator<< (std::ostream& os, Test_inputs& ti) {
-            os << ti->int_bucket;
-            return os;
-        }
-}
+        template<class T>
+        Test_inputs create_inputs_rand<test_dataType_all>(void) {
+            Test_inputs ret;
 
-std::ostream& operator<< (std::ostream& os, int_bucket& ib) {
-    os << "[short int_list] : [";
-    for (size_t i = 0; i < SHORT_INPUTS_SIZE; i++) {
-        os << ib.short_inputs[i] << " ";
-    }
-    os << "]\n";
-    os << "[mid int_list] : [";
-    for (size_t i = 0; i < MID_INPUTS_SIZE; i++) {
-        os << ib.mid_inputs[i] << " ";
-    }
-    os << "]\n";
-    os << "[long int_list] : [";
-    for (size_t i = 0; i < LONG_INPUTS_SIZE; i++) {
-        os << ib.long_inputs[i] << " ";
-    }
-    os << "]\n";
-    return os;
-}
+            ret.int_bucket->short_inputs = fill_rand<int>(SHORT_INPUTS_SIZE);
+            ret.int_bucket->mid_inputs = fill_rand<int>(MID_INPUTS_SIZE);
+            ret.int_bucket->long_inputs = fill_rand<int>(LONG_INPUTS_SIZE);
+            return ret;
+        };
+
+        template<class T>
+        Test_inputs create_inputs_rand<test_dataType_int>(void) {
+            Test_inputs ret;
+            ret.int_bucket->short_inputs = fill_rand<int>(SHORT_INPUTS_SIZE);
+            ret.int_bucket->mid_inputs = fill_rand<int>(MID_INPUTS_SIZE);
+            ret.int_bucket->long_inputs = fill_rand<int>(LONG_INPUTS_SIZE);
+            return ret;
+        };
+};
+
+// std::ostream& operator<< (std::ostream& os, int_bucket& ib) {
+//     os << "[short int_list] : [";
+//     for (size_t i = 0; i < SHORT_INPUTS_SIZE; i++) {
+//         os << ib.short_inputs[i] << " ";
+//     }
+//     os << "]\n";
+//     os << "[mid int_list] : [";
+//     for (size_t i = 0; i < MID_INPUTS_SIZE; i++) {
+//         os << ib.mid_inputs[i] << " ";
+//     }
+//     os << "]\n";
+//     os << "[long int_list] : [";
+//     for (size_t i = 0; i < LONG_INPUTS_SIZE; i++) {
+//         os << ib.long_inputs[i] << " ";
+//     }
+//     os << "]\n";
+//     return os;
+// }
 
 #endif // __INPUT_INITIATOR_HPP__
