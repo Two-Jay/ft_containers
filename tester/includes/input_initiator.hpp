@@ -69,14 +69,6 @@ static std::string generate_rand_string(void) {
     return ret;
 };
 
-template<class T>
-std::vector<T>& fill_rand<T>(size_t size) {
-    (void) size;
-    // this is origin definition for explicit specialization
-    // define fill_rand by datatype you want as below
-    return std::vector<T>();
-};
-
 // template<>
 // std::vector<char> fill_rand<char>(size_t size) {
 //     std::vector<char> ret;
@@ -86,16 +78,14 @@ std::vector<T>& fill_rand<T>(size_t size) {
 //     return ret;
 // };
 
-// template<>
-// std::vector<std::string> fill_rand<std::string>(size_t size) {
-//     std::vector<std::string> ret;
-//     for (size_t i = 0; i < size; i++) {
-//         ret.append(generate_rand_string());
-//     }
-//     return ret;
-// };
+std::vector<std::string> fill_rand(size_t size, test_dataType_string) {
+    std::vector<std::string> ret;
+    for (size_t i = 0; i < size; i++) {
+        ret.push_back(generate_rand_string());
+    }
+    return ret;
+};
 
-template<class T>
 std::vector<int> fill_rand(size_t size, test_dataType_int) {
     std::vector<int> ret;
     for (size_t i = 0; i < size; i++) {
@@ -104,7 +94,6 @@ std::vector<int> fill_rand(size_t size, test_dataType_int) {
     return ret;
 };
 
-// template<>
 // std::vector<float> fill_rand<float>(size_t size) {
 //     std::vector<float> ret;
 //     int low = 0;
@@ -144,27 +133,28 @@ class Input_initiator {
         };
 
         template<class T>
-        Test_inputs create_inputs_rand<T>(void) {
+        Test_inputs create_inputs_rand(T) {
             Test_inputs ret;
             return ret;
         };
 
         template<class T>
-        Test_inputs create_inputs_rand<test_dataType_all>(void) {
+        Test_inputs create_inputs_rand(test_dataType_all) {
             Test_inputs ret;
 
-            ret.int_bucket->short_inputs = fill_rand<int>(SHORT_INPUTS_SIZE);
-            ret.int_bucket->mid_inputs = fill_rand<int>(MID_INPUTS_SIZE);
-            ret.int_bucket->long_inputs = fill_rand<int>(LONG_INPUTS_SIZE);
+            ret.int_bucket->short_inputs = fill_rand(SHORT_INPUTS_SIZE, test_dataType_int());
+            ret.int_bucket->mid_inputs = fill_rand(MID_INPUTS_SIZE, test_dataType_int());
+            ret.int_bucket->long_inputs = fill_rand(LONG_INPUTS_SIZE, test_dataType_int());
             return ret;
         };
 
         template<class T>
-        Test_inputs create_inputs_rand<test_dataType_int>(void) {
+        Test_inputs create_inputs_rand(test_dataType_int) {
             Test_inputs ret;
-            ret.int_bucket->short_inputs = fill_rand<int>(SHORT_INPUTS_SIZE);
-            ret.int_bucket->mid_inputs = fill_rand<int>(MID_INPUTS_SIZE);
-            ret.int_bucket->long_inputs = fill_rand<int>(LONG_INPUTS_SIZE);
+
+            ret.int_bucket->short_inputs = fill_rand(SHORT_INPUTS_SIZE, test_dataType_int());
+            ret.int_bucket->mid_inputs = fill_rand(MID_INPUTS_SIZE, test_dataType_int());
+            ret.int_bucket->long_inputs = fill_rand(LONG_INPUTS_SIZE, test_dataType_int());
             return ret;
         };
 };
