@@ -121,6 +121,9 @@ class Input_initiator {
         Input_initiator() {
             std::srand(std::time(nullptr));
         };
+        ~Input_initiator() {
+            ;
+        }
 
         Test_inputs create_inputs_rand(test_dataType_all) {
             Test_inputs ret;
