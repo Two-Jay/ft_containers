@@ -1,7 +1,7 @@
 NAME = container_tester
 
 SRCS_PATH		= .
-INCS_PATH		= .
+INCS_PATH		= ./includes
 
 SRCS			= $(SRCS_PATH)/main.cpp
 OBJS			= $(SRCS:.cpp=.o)
