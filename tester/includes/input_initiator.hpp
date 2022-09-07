@@ -16,6 +16,8 @@
 #define TEST_FLOAT_ELEMENT_LIMIT 10000
 #define TEST_DOUBLE_ELEMENT_LIMIT 10000
 
+#define TEST_CHAR_SET "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
 struct test_dataType_all {};
 struct test_dataType_char {};
 struct test_dataType_int {};
@@ -66,7 +68,7 @@ std::string generate_rand_string(void) {
     std::string ret = "";
     // TEST_STRING_ELEMENT_LENGTH is defined in top of this header file;
     for (size_t i  = 0; i < TEST_STRING_ELEMENT_LENGTH; i++) {
-        ret += (33 + (std::rand() % 107)); // filled by 33 (!) to 126 (~)
+        ret += TEST_CHAR_SET[rand() % (sizeof(TEST_CHAR_SET) - 1)];
     }
     return ret;
 };
@@ -76,7 +78,7 @@ int generate_rand_int(void) {
 }
 
 char generate_rand_char(void) {
-    return 33 + (std::rand() % 107); // filled by 33 (!) to 126 (~)
+    return TEST_CHAR_SET[rand() % (sizeof(TEST_CHAR_SET) - 1)];
 }
 
 float generate_rand_float(void) {
@@ -113,7 +115,6 @@ class Input_initiator {
             (void) other;
         };
         Input_initiator& operator= (const Input_initiator& rhs) {
-            (void) rhs;
             return *this;
         };
     
