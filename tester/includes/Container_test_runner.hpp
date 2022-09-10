@@ -35,14 +35,10 @@ class Container_test_runner {
             inputs = input_initiator.create_inputs_rand(test_dataType_all());
         };
 
-        Container_test_runner(const std::string& type_param) {
-            Input_initiator input_initiator;
-            inputs = input_initiator.create_inputs_rand(check_test_type<T>(type_param));
-        };
-
         Container_test_runner(Test_inputs& inputs) {
             this->inputs = inputs;
         }
+
         virtual ~Container_test_runner() {};
         Container_test_runner(Container_test_runner& other) {
             this->inputs = other.inputs;
@@ -75,6 +71,8 @@ class Container_test_runner {
 };
 
 struct Experimental_vectors {
+    std::vector<int> empty_vector;
+    std::vector<int> zerofill_vector;
     std::vector<int> int_vector;
     std::vector<char> char_vector;
     std::vector<std::string> string_vector;
@@ -83,6 +81,8 @@ struct Experimental_vectors {
 };
 
 struct Comparison_vectors {
+    std::vector<int> empty_vector;
+    std::vector<int> zerofill_vector;
     std::vector<int> int_vector;
     std::vector<char> char_vector;
     std::vector<std::string> string_vector;
@@ -95,33 +95,38 @@ class Test_runner_vector : public Container_test_runner {
     // 멤버편수로 컨테이너별 테스트 객체 생성
     // 멤버변수로 잡아둔 테스트 객체 내에서 In/output 관리하기
     private :
-        Experimental_vectors experimental_vectors;
-        Comparison_vectors comparison_vectors;
+        std::map<std::string, Experimental_vectors> experimental_vectors_bucket;
+        std::map<std::string, Comparison_vectors> comparison_vectors_bucket;
+        // Experimental_vectors experimental_short_vectors;t;
+        // Experimental_vectors experimental_mid_vectors;
+        // Experimental_vectors experimental_long_vectors;
+        // Comparison_vectors comparison_short_vectors;
+        // Comparison_vectors comparison_mid_vectors;
+        // Comparison_vectors comparison_long_vectors;
 
     public :
-        Test_runner_vector() {};
-        virtual ~Test_runner_vector() {};
+        Test_runner_vector() {
+
+        };
+        virtual ~Test_runner_vector() {
+            
+        };
 
         template<class T>
-        std::vector<T>& get_experimental_vector(std::string type_name) {
-            if (type_name == "int") {
-                return experimental_vectors.int_vector;
-            } else if (type_name == "char") {
-                return experimental_vectors.char_vector;
-            } else if (type_name == "string") {
-                return experimental_vectors.string_vector;
-            } else if (type_name == "double") {
-                return experimental_vectors.double_vector;
-            } else if (type_name == "float") {
-                return experimental_vectors.float_vector;
-            } else {
-                return experimental_vectors.int_vector;
-            }
+        std::vector<T>& get_experimental_vector(std::string _typename, std::string _sizename) {
+            if (type_name == "int") return experimental_vectors.int_vector;
+            else if (type_name == "char") return experimental_vectors.char_vector;
+            else if (type_name == "string") return experimental_vectors.string_vector;
+            else if (type_name == "double") return experimental_vectors.double_vector;
+            else if (type_name == "float") return experimental_vectors.float_vector;
+            else return experimental_vectors.int_vector;
         }
 
         template<class T>
         std::vector<T>& get_comparison_vector(std::string type_name) {
-            if (type_name == "int") {
+            if (type_name == "zerofill") {
+                return com
+            } else if (type_name == "int") {
                 return comparison_vectors.int_vector;
             } else if (type_name == "char") {
                 return comparison_vectors.char_vector;
@@ -145,9 +150,11 @@ class Test_runner_vector : public Container_test_runner {
         virtual void run_certain_length(testType_shortCase) {
 
         };
+
         virtual void run_certain_length(testType_midCase) {
 
         };
+
         virtual void run_certain_length(testType_longCase) {
 
         };
