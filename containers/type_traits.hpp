@@ -3,102 +3,120 @@
 
 #include "definition.hpp"
 
-__LIBFT_CONTAINERS_START__
+namespace ft {
 
-/*
-*   ****        primary_categories      composite_categories
-*               void                    -
-*   funda-      ft::null_ptr            -
-*   mental      integral                arith-
-*               floating_point          metic
-*   ----------------------------------------------
-*               pointer                 -
-*   compound    member_object_pointer   member-
-*               member_function_pointer pointer
-*               enum                    -
-*               union                   -
-*               class                   -
-*               array                   -
-*               l-value reference       refe-
-*               r-value reference       rence
-*               function                -
-*
-*/ 
+    /*
+    *   ****        primary_categories      composite_categories
+    *               void                    -
+    *   funda-      ft::null_ptr            -
+    *   mental      integral                arith-
+    *               floating_point          metic
+    *   ----------------------------------------------
+    *               pointer                 -
+    *   compound    member_object_pointer   member-
+    *               member_function_pointer pointer
+    *               enum                    -
+    *               union                   -
+    *               class                   -
+    *               array                   -
+    *               l-value reference       refe-
+    *               r-value reference       rence
+    *               function                -
+    *
+    */ 
 
+    
 
-/*
-*   is_void
-*/
+    template <bool Cond, class T = void>
+    struct enable_if {};
 
-template<typename T>
-struct is_void { static const bool value = false; }
+    template <class T>
+    struct enable_if<true, T> { typedef T type; };
 
-template<>
-struct is_void<void> { static const bool value = true; }
+    /*
+    *   is_void
+    */
 
-/*
-*   is_integral
-*/
+    template<typename T>
+    struct is_void : __false_type {};
 
-template<typename T>
-struct is_integral<> { static const bool value = false; }
+    template<>
+    struct is_void<void> : __true_type {};
 
-template<>
-struct is_integral<bool> { static const bool value = true; }
+    struct __true_type {
+        static const bool value = true;
+        typedef bool value_type;
+        typedef true_type type;
+    }
 
-template<>
-struct is_integral<char> { static const bool value = true; }
+    struct __false_type {
+        static const bool value = false;
+        typedef bool value_type;
+        typedef true_type type;
+    }
 
-template<>
-struct is_integral<wchar_t> { static const bool value = true; }
+    /*
+    *   is_integral
+    */
 
-template<>
-struct is_integral<signed char> { static const bool value = true; }
+    template<typename T>
+    struct is_integral<> : __false_type {};
 
-template<>
-struct is_integral<short int> { static const bool value = true; }
+    template<>
+    struct is_integral<bool> : __true_type {};
 
-template<>
-struct is_integral<int> { static const bool value = true; }
+    template<>
+    struct is_integral<char> : __true_type {};
 
-template<>
-struct is_integral<long int> { static const bool value = true; }
+    template<>
+    struct is_integral<wchar_t> : __true_type {};
 
-template<>
-struct is_integral<long long int> { static const bool value = true; }
+    template<>
+    struct is_integral<signed char> : __true_type {};
 
-template<>
-struct is_integral<unsigned char> { static const bool value = true; }
+    template<>
+    struct is_integral<short int> : __true_type {};
 
-template<>
-struct is_integral<unsigned short int> { static const bool value = true; }
+    template<>
+    struct is_integral<int> : __true_type {};
 
-template<>
-struct is_integral<unsigned int> { static const bool value = true; }
+    template<>
+    struct is_integral<long int> : __true_type {};
 
-template<>
-struct is_integral<unsigned long int> { static const bool value = true; }
+    template<>
+    struct is_integral<long long int> : __true_type {};
 
-template<>
-struct is_integral<unsigned long long int> { static const bool value = true; }
+    template<>
+    struct is_integral<unsigned char> : __true_type {};
 
-/*
-*   is_floating_point
-*/
+    template<>
+    struct is_integral<unsigned short int> : __true_type {};
 
-template<typename T>
-struct is_floating_point { static const bool value = false; }
+    template<>
+    struct is_integral<unsigned int> : __true_type {};
 
-template<>
-struct is_floating_point<float> { static const bool value = true; }
+    template<>
+    struct is_integral<unsigned long int> : __true_type {};
 
-template<>
-struct is_floating_point<double> { static const bool value = true; }
+    template<>
+    struct is_integral<unsigned long long int> : __true_type {};
 
-template<>
-struct is_floating_point<long double> { static const bool value = true; }
+    /*
+    *   is_floating_point
+    */
 
+    template<typename T>
+    struct is_floating_point : __false_type {};
 
-__LIBFT_CONTAINERS_END__
+    template<>
+    struct is_floating_point<float> : __true_type {};
+
+    template<>
+    struct is_floating_point<double> : __true_type {};
+
+    template<>
+    struct is_floating_point<long double> : __true_type {};
+
+}
 
 #endif // __FT_CONTAINERS__TYPE_TRAIT__
