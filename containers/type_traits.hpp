@@ -116,7 +116,6 @@ namespace ft {
 
     template<>
     struct is_floating_point<long double> : __true_type {};
-
 }
 
 #endif // __FT_CONTAINERS__TYPE_TRAIT__
