@@ -46,21 +46,21 @@ namespace ft {
     struct __true_type {
         static const bool value = true;
         typedef bool value_type;
-        typedef true_type type;
-    }
+        typedef __true_type type;
+    };
 
     struct __false_type {
         static const bool value = false;
         typedef bool value_type;
-        typedef true_type type;
-    }
+        typedef __true_type type;
+    };
 
     /*
     *   is_integral
     */
 
     template<typename T>
-    struct is_integral<> : __false_type {};
+    struct is_integral : __false_type {};
 
     template<>
     struct is_integral<bool> : __true_type {};
