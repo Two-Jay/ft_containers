@@ -2,45 +2,78 @@
 #define __FT_CONTAINERS_COMPRESSED_PAIR__
 
 #include <utility>
+#include "definition.hpp"
 
-template<class T1, class T2>
+__LIBFT_CONTAINERS_START__
+
+
+template<class _T1, class _T2>
 struct pair {
     public :
-        typedef T1                      first_type;
-        typedef T2                      second_type;
-        typedef T1&                     first_reference;
-        typedef T2&                     second_reference;
+        typedef _T1                      first_type;
+        typedef _T2                      second_type;
+        typedef _T1&                     first_reference;
+        typedef _T2&                     second_reference;
         typedef const first_reference   const_first_reference;
         typedef const second_reference  const_second_reference;
 
     protected :
         
     private :
-        first_type              first_value_;
-        second_type             second_value_;
+        first_type              __first_value;
+        second_type             __second_value;
 
-    pair() : first_value_(), second_value_() {};
-    pair(const_first_reference) : first_value_(const_first_reference) {}
-    pair(const_first_reference, const_second_reference) : first_value_(const_first_reference), second_value_(const_second_reference) {};
-    pair(const pair<T1, T2>& other) : first_value_(other.first_value_), second_value_(other.second_value_) {};
+    pair() : __first_value(), __second_value() {};
 
-    pair& operator= (const pair<T1, T2>& other) { this->first_value_ = other.first_value_; this->second_value_ = other.second_value_; return *this };
+    pair(const_first_reference) : __first_value(const_first_reference) {};
+    
+    pair(const_first_reference, const_second_reference) : __first_value(const_first_reference), __second_value(const_second_reference) {};
+    
+    pair(const pair<_T1, _T2>& other) : __first_value(other.__first_value), __second_value(other.__second_value) {};
+
+    pair& operator= (const pair<_T1, _T2>& other) {
+        this->__first_value = other.__first_value;
+        this->__second_value = other.__second_value;
+        return *this
+    };
 };
 
-template <class T1, class T2>
-bool operator== (const pair<T1, T2> pair_a, const pair<T1, T2> pair_b) { return (pair_a.first_value_ == pair_b.first_value_ && pair_a.second_value_ == pair_b.second_value_) };
+// == != < > <= >=
+template<typename _T1, typename _T2>
+bool operator== (const ft::pair<_T1, _T2>& lhs, const ft::pair<_T1, _T2>& rhs) {
+    return lhs.first == rhs.first && lhs.second == rhs.second;
+}
 
-template <class T1, class T2>
-bool operator<= (const pair<T1, T2> pair_a, const pair<T1, T2> pair_b) { return (pair_a.first_value_ <= pair_b.first_value_ || (!(pair_a.first_value_ <= pair_b.first_value_) && pair_a.second_value_ <= pair_b.second_value_)) };
+template <typename _T1, typename _T2>
+bool operator!= (const ft::pair<_T1, _T2>& lhs, const ft::pair<_T1, _T2>& rhs) {
+    return !(lhs == rhs);
+}
 
-template <class T1, class T2>
-bool operator>= (const pair<T1, T2> pair_a, const pair<T1, T2> pair_b) { return (pair_a.first_value_ >= pair_b.first_value_ || (!(pair_a.first_value_ >= pair_b.first_value_) && pair_a.second_value_ >= pair_b.second_value_)) };
+template <typename _T1, typename _T2>
+bool operator< (const ft::pair<_T1, _T2>& lhs, const ft::pair<_T1, _T2>& rhs) {
+    return lhs.__first_value == rhs.__first_value ? lhs.__second_value < rhs.__second_value : lhs.__first_value < rhs.__first_value;
+}
 
-template <class T1, class T2>
-bool operator<  (const pair<T1, T2> pair_a, const pair<T1, T2> pair_b) { return () };
+template <typename _T1, typename _T2>
+bool operator> (const ft::pair<_T1, _T2>& lhs, const ft::pair<_T1, _T2>& rhs) {
+    return lhs.__first_value == rhs.__first_value ? lhs.__second_value > rhs.__second_value : lhs.__first_value > rhs.__first_value;
+}
 
-template <class T1, class T2>
-bool operator> (const pair<T1, T2> pair_a, const pair<T1, T2> pair_b) { return () };
+template <typename _T1, typename _T2>
+bool operator<= (const ft::pair<_T1, _T2>& lhs, const ft::pair<_T1, _T2>& rhs) {
+    return !(lhs > rhs);
+}
 
+template <typename _T1, typename _T2>
+bool operator>= (const ft::pair<_T1, _T2>& lhs, const ft::pair<_T1, _T2>& rhs) {
+    return !(lhs < rhs);
+}
+
+template <typename _T1, typename _T2>
+ft::pair<_T1, _T2> make_pair (_T1 first, _T2 second) {
+    return ft::pair<_T1, _T2>(first, second);
+}
+
+__LIBFT_CONTAINERS_END__
 
 #endif // __FT_CONTAINERS_COMPRESSED_PAIR__
