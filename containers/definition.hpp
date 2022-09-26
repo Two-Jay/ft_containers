@@ -1,20 +1,17 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   definition.hpp                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jekim <jekim@student.42.fr>                +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/27 00:14:34 by jekim             #+#    #+#             */
-/*   Updated: 2022/07/09 20:00:00 by jekim            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef __FT_CONTAINERS__DEFINITION__
 #define __FT_CONTAINERS__DEFINITION__
 
 #define __LIBFT_CONTAINERS_START__ namespace ft {
 #define __LIBFT_CONTAINERS_END__ }
 
+/*
+* Error Message Defined as...
+* std::__error_function__(__ERRMSG_C_SPECIFIER__)
+*/
+#define __ERRMSG_VECTOR_SPECIFIER__ "vector"
+#define __ERRMSG_MAP_SPECIFIER__ "vector"
+
+#define _NOEXCEPT throw() // deprected in c++98
+#  define _NOEXCEPT_(x) throw(x)
 
 #endif // __FT_CONTAINERS__DEFINITION__

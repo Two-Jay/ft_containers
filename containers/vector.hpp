@@ -2,20 +2,11 @@
 #define __FT_CONTAINERS_VECTOR__
 
 #include "./definition.hpp"
-#include <vector>
+// #include <vector>
 #include <exception>
-#include <string>
-
-#define __ERRMSG_ERROR_PREFIX__ "Error : "
-#define __ERRMSG_VECTOR_PREFIX__ "Vector - "
-#define __ERRMSG_RANGE_ERROR__ "range error."
-#define __ERRMSG_LENGTH_ERROR__ "length error."
-
+#include <memory>
 
 __LIBFT_CONTAINERS_START__
-
-
-
 
 class __vector_base_common {
     protected :
@@ -30,20 +21,21 @@ class __vector_base_common {
       
         void __throw_range_error() const {
             throw std::range_error(__ERRMSG_VECTOR_SPECIFIER__);
-        }
+        };
 };
 
-template <class T, class _Allocator>
-class _vector_base : protected __vector_base_common {
+template <class _Tp, class _Allocator>
+class _vector_base {
     public:
         typedef _Allocator                                  allocator_type;
         typedef allocator_traits<allocator_type>            __alloc_traits;
         typedef typename __alloc_traits::size_type          size_type;
+
     protected :
-        typedef T                                           value_type;
-        typedef std::allocator<value_type>                  allocator_type;
+        typedef _Tp                                         value_type;
         typedef value_type&                                 reference;
         typedef const value_type&                           const_reference;
+        typedef std::allocator<value_type>                  allocator_type;
         typedef typename __alloc_traits::pointer            pointer;
         typedef typename __alloc_traits::const_pointer      const_pointer;
         typedef typename __alloc_traits::difference_type    difference_type;
@@ -52,8 +44,27 @@ class _vector_base : protected __vector_base_common {
 
         pointer                                             __begin_;
         pointer                                             __end_;
-        ft::__conpressed_pair<pointer, allocator_type>      __end_cap_;
+        ft::pair<pointer, allocator_type>                   __end_cap_;
         
+        allocator_type& __alloc() _noexcept {
+            return __end_cap_.second();
+        }
+
+        const allocator_type& __alloc() const _noexcept {
+            return __end_cap_.second();
+        }
+
+        pointer& __end_cap() _noexcept {
+            return __end_cap_.first();
+        }
+        
+        const pointer& __end_cap() const _noexcept {
+            return __end_cap_.first();
+        }
+
+        _vector_base() {
+            
+        }
 };
 
 template <class T, class _Allocator>
