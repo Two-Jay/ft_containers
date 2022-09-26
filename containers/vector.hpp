@@ -2,8 +2,20 @@
 #define __FT_CONTAINERS_VECTOR__
 
 #include "./definition.hpp"
+#include <vector>
+#include <exception>
+#include <string>
+
+#define __ERRMSG_ERROR_PREFIX__ "Error : "
+#define __ERRMSG_VECTOR_PREFIX__ "Vector - "
+#define __ERRMSG_RANGE_ERROR__ "range error."
+#define __ERRMSG_LENGTH_ERROR__ "length error."
+
 
 __LIBFT_CONTAINERS_START__
+
+
+
 
 class __vector_base_common {
     protected :
@@ -11,13 +23,13 @@ class __vector_base_common {
         __vector_base_common(const __vector_base_common&) {};
         __vector_base_common& operator=(const __vector_base_common&) {};
         ~__vector_base_common() {};
-        
+  
         void __throw_length_error() const {
-            throw std::length_error("exception from [ft::vector] : length error");
-        }
-
-        void __throw_out_of_range() const {
-            throw std::out_of_range("exception from [ft::vector] : out of range");
+            throw std::length_error(__ERRMSG_VECTOR_SPECIFIER__);
+        };
+      
+        void __throw_range_error() const {
+            throw std::range_error(__ERRMSG_VECTOR_SPECIFIER__);
         }
 };
 
