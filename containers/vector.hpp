@@ -62,10 +62,45 @@ class _vector_base {
             return __end_cap_.first();
         }
 
-        _vector_base() {
-            
-        }
+        _vector_base();
+
+        _vector_base(const allocator_type& __a);
+
+        ~_vector_base();
+
+        size_type capacity() const _NOEXCEPT {
+            return static_cast<size_type>(__end_cap() - __begin_);
+        };
+
+        void __destruct_at_end(pointer __new_last) _NOEXCEPT;
 };
+
+template <class _Tp, class _Allocator>
+inline _vector_base<_Tp, _Allocator>::__destruct_at_end(pointer __new_last) _NOEXCEPT
+{
+    pointer tmp = __end_;
+    while (__new_last != tmp) {
+        __alloc_traits::destroy(__alloc(), ft::__to_address(--tmp));
+    }
+    this.__end_ = __new_last;
+}
+
+template <class _Tp, class _Allocator>
+inline _vector_base<_Tp, _Allocator>::_vector_base(const allocator_type& __a)
+    : __begin_(ft::nullptr),
+      __end_(ft::nullptr),
+      __end_cap_(ft::nullptr, __a)
+{};
+
+template <class _Tp, class _Allocator>
+inline _vector_base<_Tp, _Allocator>::~_vector_base()
+{
+    if (__begin_ != ft::nullptr)
+    {
+        clear();
+        __alloc_traits::deallocate(__alloc(), __begin_, capacity());
+    }
+}
 
 template <class T, class _Allocator>
 class vector : private _vector_base <T, _Allocator> {

@@ -33,6 +33,8 @@ namespace ft {
     template <class T>
     struct enable_if<true, T> { typedef T type; };
 
+
+
     /*
     *   is_void
     */
@@ -116,6 +118,24 @@ namespace ft {
 
     template<>
     struct is_floating_point<long double> : __true_type {};
+
+    template <class _Tp>
+    struct is_nothrow_default_constructible : __false_type {};
+
+    /*
+    *   integral_constant
+    */
+
+    template <class _Tp, _Tp __v>
+    PUBLIC_API struct integral_constant {
+        static const _Tp value = __v;
+        typedef _Tp                     value_type;
+        typedef integral_constant       type;
+        PUBLIC_API operator value_type() const _NOEXCEPT {return value; };
+    };
+    
+    template <class _Tp, _Tp __v>
+    PUBLIC_API const _Tp integral_constant<_Tp, __v>::value;
 }
 
 #endif // __FT_CONTAINERS__TYPE_TRAIT__

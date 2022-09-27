@@ -11,6 +11,9 @@
 #define __ERRMSG_VECTOR_SPECIFIER__ "vector"
 #define __ERRMSG_MAP_SPECIFIER__ "vector"
 
+#define PUBLIC_API __attribute__((visibility("default")))
+#define PRIVATE_API __attribute__((visibility("hidden")))
+
 #define _NOEXCEPT throw() // deprected in c++98
 #  define _NOEXCEPT_(x) throw(x)
 
