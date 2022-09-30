@@ -8,27 +8,11 @@
 
 __LIBFT_CONTAINERS_START__
 
-class __vector_base_common {
-    protected :
-        __vector_base_common() {};
-        __vector_base_common(const __vector_base_common&) {};
-        __vector_base_common& operator=(const __vector_base_common&) {};
-        ~__vector_base_common() {};
-  
-        void __throw_length_error() const {
-            throw std::length_error(__ERRMSG_VECTOR_SPECIFIER__);
-        };
-      
-        void __throw_range_error() const {
-            throw std::range_error(__ERRMSG_VECTOR_SPECIFIER__);
-        };
-};
-
 template <class _Tp, class _Allocator>
 class _vector_base {
     public:
         typedef _Allocator                                  allocator_type;
-        typedef allocator_traits<allocator_type>            __alloc_traits;
+        typedef std::allocator_traits<allocator_type>            __alloc_traits;
         typedef typename __alloc_traits::size_type          size_type;
 
     protected :
@@ -73,6 +57,14 @@ class _vector_base {
         };
 
         void __destruct_at_end(pointer __new_last) _NOEXCEPT;
+
+        void __throw_length_error() const {
+            throw std::length_error(__ERRMSG_VECTOR_SPECIFIER__);
+        };
+      
+        void __throw_range_error() const {
+            throw std::range_error(__ERRMSG_VECTOR_SPECIFIER__);
+        };
 };
 
 template <class _Tp, class _Allocator>
