@@ -1,9 +1,9 @@
 #ifndef __FT_CONTAINERS_ITERATOR_TYPE__
 #define __FT_CONTAINERS_ITERATOR_TYPE__
 
-#include "./definition.hpp"
+#include <cstddef> // for ptrdiff_t
 
-__LIBFT_CONTAINERS_START__
+namespace ft {
 
 struct input_iterator_tag {};
 struct output_iterator_tag {};
@@ -13,11 +13,11 @@ struct random_access_iterator_tag : bidirectional_iterator_tag {};
 
 template <class _Iter>
 struct Iterator_traits {
-    typedef _Iter::difference_type       difference_type;
-    typedef _Iter::value_type            value_type;
-    typedef _Iter::pointer               pointer;
-    typedef _Iter::reference             reference;
-    typedef _Iter::iterator_category     iterator_category;
+    typedef typename _Iter::difference_type       difference_type;
+    typedef typename _Iter::value_type            value_type;
+    typedef typename _Iter::pointer               pointer;
+    typedef typename _Iter::reference             reference;
+    typedef typename _Iter::iterator_category     iterator_category;
 };
 
 template <class _Tp>
@@ -54,13 +54,13 @@ struct Iterator {
 };
 
 template <class _Iter>
-typename ft::Iterator_traits<_Iter>::iterator_category _iterator_category(const _Iter& __iter) {
-    return ft::Iterator_traits<__iter>::iterator_category();
+typename ft::Iterator_traits<_Iter>::iterator_category _iterator_category(const _Iter&) {
+    return ft::Iterator_traits<_Iter>::iterator_category();
 }
 
 template <class _Iter>
-typename ft::Iterator_traits<_Iter>::difference_type _difference_type(const _Iter& __iter) {
-    return ft::Iterator_traits<__iter>::difference_type();
+typename ft::Iterator_traits<_Iter>::difference_type _difference_type(const _Iter&) {
+    return ft::Iterator_traits<_Iter>::difference_type();
 }
 
 template <class _Iter>
@@ -85,7 +85,7 @@ typename ft::Iterator_traits<_Iter>::difference_type distance(_Iter __first, _It
 template <class _Iter>
 void _advance(_Iter iter, typename ft::Iterator_traits<_Iter>::difference_type n, ft::input_iterator_tag) {
     for (; n > 0; --n) {
-        ++it;
+        ++iter;
     }
 }
 
@@ -108,10 +108,10 @@ void _advance(_Iter __iter, typename ft::Iterator_traits<_Iter>::difference_type
 }
 
 template <class _Iter, class Distance>
-void advance(_Iter __iter, Distance n) {
-    ft::_advance(__iter, _difference_type(__iter), _iterator_category(__iter));
+void advance(_Iter __iter, Distance __n) {
+    ft::_advance(__iter, __n, _iterator_category(__iter));
 }
 
-__LIBFT_CONTAINERS_END__
+}
 
 #endif // __FT_CONTAINERS_ITERATOR_TYPE__
