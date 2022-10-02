@@ -1,7 +1,7 @@
 #ifndef __FT_CONTAINERS__TYPE_TRAIT__
 #define __FT_CONTAINERS__TYPE_TRAIT__
 
-#include "definition.hpp"
+#include <stdexcept>
 
 namespace ft {
 
@@ -34,17 +34,6 @@ namespace ft {
     struct enable_if<true, T> { typedef T type; };
 
 
-
-    /*
-    *   is_void
-    */
-
-    template<typename T>
-    struct is_void : __false_type {};
-
-    template<>
-    struct is_void<void> : __true_type {};
-
     struct __true_type {
         static const bool value = true;
         typedef bool value_type;
@@ -56,6 +45,18 @@ namespace ft {
         typedef bool value_type;
         typedef __true_type type;
     };
+
+    /*
+    *   is_void
+    */
+
+
+
+    template<typename T>
+    struct is_void : __false_type {};
+
+    template<>
+    struct is_void<void> : __true_type {};
 
     /*
     *   is_integral
@@ -86,9 +87,6 @@ namespace ft {
     struct is_integral<long int> : __true_type {};
 
     template<>
-    struct is_integral<long long int> : __true_type {};
-
-    template<>
     struct is_integral<unsigned char> : __true_type {};
 
     template<>
@@ -99,9 +97,6 @@ namespace ft {
 
     template<>
     struct is_integral<unsigned long int> : __true_type {};
-
-    template<>
-    struct is_integral<unsigned long long int> : __true_type {};
 
     /*
     *   is_floating_point
@@ -121,21 +116,6 @@ namespace ft {
 
     template <class _Tp>
     struct is_nothrow_default_constructible : __false_type {};
-
-    /*
-    *   integral_constant
-    */
-
-    template <class _Tp, _Tp __v>
-    PUBLIC_API struct integral_constant {
-        static const _Tp value = __v;
-        typedef _Tp                     value_type;
-        typedef integral_constant       type;
-        PUBLIC_API operator value_type() const _NOEXCEPT {return value; };
-    };
-    
-    template <class _Tp, _Tp __v>
-    PUBLIC_API const _Tp integral_constant<_Tp, __v>::value;
 }
 
 #endif // __FT_CONTAINERS__TYPE_TRAIT__

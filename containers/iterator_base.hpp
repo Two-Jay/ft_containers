@@ -1,5 +1,5 @@
-#ifndef __FT_CONTAINERS_ITERATOR_TYPE__
-#define __FT_CONTAINERS_ITERATOR_TYPE__
+#ifndef __FT_CONTAINERS_ITERATOR_BASE__
+#define __FT_CONTAINERS_ITERATOR_BASE__
 
 #include <cstddef> // for ptrdiff_t
 
@@ -110,6 +110,6 @@ namespace ft {
     void advance(_Iter __iter, Distance __n) {
         ft::_advance(__iter, __n, _iterator_category(__iter));
     }
-};
+}
 
-#endif // __FT_CONTAINERS_ITERATOR_TYPE__
+#endif // __FT_CONTAINERS_ITERATOR_T YPE__

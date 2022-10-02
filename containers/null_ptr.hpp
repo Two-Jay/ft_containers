@@ -1,8 +1,6 @@
 #ifndef __FT_CONTAINERS__NULL_PTR__
 #define __FT_CONTAINERS__NULL_PTR__
 
-#include "definition.hpp"
-
 namespace ft {
 
     const class nullptr_t {
