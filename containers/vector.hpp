@@ -8,7 +8,7 @@
 
 namespace ft {
     // this class deals with error exception and alloc / dealloc logic
-    template <typename _T, typename _Alloc, typename _isStatic>
+    template <typename _T, typename _Alloc>
     class _vector_base {
         public :
             typedef _Alloc                                  allocator_type;
@@ -52,7 +52,7 @@ namespace ft {
     };
 
     template <typename _T, typename _Alloc = std::allocator<_T> >
-    class Vector : public _vector_base {
+    class Vector : public _vector_base<_T, _Alloc> {
         public :
             typedef _T                                                          value_type;
             typedef _Alloc                                                      allocator_type;
