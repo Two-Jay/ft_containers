@@ -2,104 +2,63 @@
 #define __FT_CONTAINERS_VECTOR__
 
 #include "./definition.hpp"
-// #include <vector>
+#include <vector>
 #include <exception>
 #include <memory>
 
 __LIBFT_CONTAINERS_START__
 
-template <class _Tp, class _Allocator>
+template <typename _T, typename _Alloc>
 class _vector_base {
-    public:
-        typedef _Allocator                                  allocator_type;
-        typedef std::allocator_traits<allocator_type>            __alloc_traits;
-        typedef typename __alloc_traits::size_type          size_type;
-
+    public :
+        typedef _Alloc                                  allocator_type;
+        typedef typename _Alloc::value_type             value_type;
+        typedef typename _Alloc::pointer                pointer;
+        typedef typename _Alloc::const_pointer          const_pointer;
+        typedef typename _Alloc::reference              reference;
+        typedef typename _Alloc::const_reference        const_reference;
+        typedef typename _Alloc::size_type              size_type;
+        typedef typename _Alloc::difference_type        difference_type;
+    
     protected :
-        typedef _Tp                                         value_type;
-        typedef value_type&                                 reference;
-        typedef const value_type&                           const_reference;
-        typedef std::allocator<value_type>                  allocator_type;
-        typedef typename __alloc_traits::pointer            pointer;
-        typedef typename __alloc_traits::const_pointer      const_pointer;
-        typedef typename __alloc_traits::difference_type    difference_type;
-        typedef pointer                                     iterator;
-        typedef const_pointer                               const_iterator;
+        pointer         _start;
+        pointer         _finish;
+        pointer         _end_of_storage;
 
-        pointer                                             __begin_;
-        pointer                                             __end_;
-        ft::pair<pointer, allocator_type>                   __end_cap_;
-        
-        allocator_type& __alloc() _noexcept {
-            return __end_cap_.second();
-        }
-
-        const allocator_type& __alloc() const _noexcept {
-            return __end_cap_.second();
-        }
-
-        pointer& __end_cap() _noexcept {
-            return __end_cap_.first();
-        }
-        
-        const pointer& __end_cap() const _noexcept {
-            return __end_cap_.first();
-        }
-
-        _vector_base();
-
-        _vector_base(const allocator_type& __a);
-
-        ~_vector_base();
-
-        size_type capacity() const _NOEXCEPT {
-            return static_cast<size_type>(__end_cap() - __begin_);
-        };
-
-        void __destruct_at_end(pointer __new_last) _NOEXCEPT;
-
-        void __throw_length_error() const {
-            throw std::length_error(__ERRMSG_VECTOR_SPECIFIER__);
-        };
-      
-        void __throw_range_error() const {
-            throw std::range_error(__ERRMSG_VECTOR_SPECIFIER__);
-        };
-};
-
-template <class _Tp, class _Allocator>
-inline _vector_base<_Tp, _Allocator>::__destruct_at_end(pointer __new_last) _NOEXCEPT
-{
-    pointer tmp = __end_;
-    while (__new_last != tmp) {
-        __alloc_traits::destroy(__alloc(), ft::__to_address(--tmp));
-    }
-    this.__end_ = __new_last;
-}
-
-template <class _Tp, class _Allocator>
-inline _vector_base<_Tp, _Allocator>::_vector_base(const allocator_type& __a)
-    : __begin_(ft::nullptr),
-      __end_(ft::nullptr),
-      __end_cap_(ft::nullptr, __a)
-{};
-
-template <class _Tp, class _Allocator>
-inline _vector_base<_Tp, _Allocator>::~_vector_base()
-{
-    if (__begin_ != ft::nullptr)
-    {
-        clear();
-        __alloc_traits::deallocate(__alloc(), __begin_, capacity());
-    }
-}
-
-template <class T, class _Allocator>
-class vector : private _vector_base <T, _Allocator> {
 
     private :
-    
-};
+
+    public :
+        _vector_base() : _start(NULL), _finish(NULL), _end_of_storage(NULL) {};
+
+        
+
+}
+
+template <typename _T, typename _Alloc = std::allocator<_T>>
+class Vector : public _vector_base {
+    public :
+        typedef _T                                              value_type;
+        typedef _Alloc                                          allocator_type;
+        typedef std::size_t                                     size_type;
+        typedef std::ptrdiff_t                                  difference_type;
+        typedef value_type&                                     reference;
+        typedef const value_type&                               const_reference;
+        typedef allocator_type::pointer                         pointer;
+        typedef allocator_type::const_pointer                   const_pointer;
+        typedef ft::Random_access_iterator<value_type>          iterator;
+        typedef ft::Random_access_iterator<const value_type>    const_iterator;
+        typedef ft::Reverse_iterator<iterator>                  reverse_iterator;
+        typedef ft::Reverse_iterator<const_iterator>            const_reverse_iterator;
+
+    protected :
+
+    private :
+
+
+    public :
+
+}
 
 __LIBFT_CONTAINERS_END__
 
