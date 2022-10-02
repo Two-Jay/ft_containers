@@ -6,6 +6,8 @@
 #include <exception>
 #include <memory>
 
+#define ERROR_ALLOCATE_MEMORY 134
+
 namespace ft {
     // this class deals with error exception and alloc / dealloc logic
     template <typename _T, typename _Alloc, typename _IsStatic>
@@ -81,24 +83,11 @@ namespace ft {
 
         protected :
             allocator_type   _data_allocator;
-            pointer         _start;
-            pointer         _finish;
+            pointer         _C;
             pointer         _end_of_storage;
 
             void    _throw_out_of_range() const {
                 throw std::out_of_range("vector");
-            }
-
-            class _except_type_non_equel_error : public std::exception {
-                public :
-                    virtual const char *what() const throw () {};
-                    virtual ~_except_type_non_equel_error() throw () {
-                        return 
-                    };
-            }
-
-            void    _throw_type_non_equel_error() const {
-                throw ft::
             }
 
             void    _throw_length_error() const {
@@ -122,6 +111,67 @@ namespace ft {
             typedef ft::Random_access_iterator<const value_type, vector_type>   const_iterator;
             typedef ft::Reverse_iterator<iterator>                              reverse_iterator;
             typedef ft::Reverse_iterator<const_iterator>                        const_reverse_iterator;
+
+
+            // constructors
+            explicit Vector(const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
+                this->allocate(0);
+            };
+
+            template <class InputIterator>
+            Vector(InputIterator __first, InputIterator __last, const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
+                difference_type __n = ft::distance(__first, __last);
+                
+                this->allocate(__n);
+                while (__n--) { this->push_back(*__first++); }
+            };
+
+            // Vector(const Vector& __x) : _vector_base<_T, _Alloc>(__x._data_allocator) {
+            //     this->allocate(__x.size());
+            //     for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
+            // };
+
+            Vector(const Vector& __x) { *this = _x; } // 둘 중에 뭐가 맞을까...
+            
+            Vector&
+            operator= (const Vector& __x) {
+                if (this != &__x) {
+                    this->clear();
+                    this->allocate(__x.size());
+                    for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
+                }
+                return *this;
+            };
+            
+            ~Vector() {
+                this->clear();
+                this->allocator_type().deallocate();
+            };
+
+        private :
+            size_type           _size_;
+
+            size_type
+            size (void) const {
+                return this->_size_;
+            }
+
+            size_type
+            max_size (void) const {
+                return this->allocator_type().max_size();
+            }
+
+            size_type
+            allocate(size_type __n, const allocator_type& _Alloc = allocator_type()) {
+                try {
+                    _C      = __n ? this->allocate(__n) : 0;
+                    _size   = 0;
+                    _end_of_storage = _start + __n;
+                }
+                catch (...) {
+                    exit(ERROR_ALLOCATE_MEMORY);
+                }
+            }
     };
 } // namespace ft
 
