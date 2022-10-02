@@ -2,7 +2,6 @@
 #define __FT_CONTAINERS_ITERATOR_TYPE__
 
 #include "./definition.hpp"
-#include "./iterator.hpp"
 
 __LIBFT_CONTAINERS_START__
 

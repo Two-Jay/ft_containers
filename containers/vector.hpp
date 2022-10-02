@@ -29,11 +29,12 @@ class _vector_base {
     private :
 
     public :
-        _vector_base() : _start(NULL), _finish(NULL), _end_of_storage(NULL) {};
+        _vector_base() : _start(NULL), _finish(NULL), _end_of_storage(NULL)
+        {};
 
         
 
-}
+};
 
 template <typename _T, typename _Alloc = std::allocator<_T>>
 class Vector : public _vector_base {
