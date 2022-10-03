@@ -5,7 +5,7 @@
 
 namespace ft {
     template <class _Alloc>
-    struct allocator_traits {
+    struct Alloc_traits {
         public :
             typedef _Alloc                                                      allocator_type;
             typedef typename _Alloc::value_type                                 value_type;

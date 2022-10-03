@@ -3,14 +3,16 @@
 
 #include "./iterators.hpp"
 #include "./null_ptr.hpp"
+#include "./alloc_traits.hpp"
 #include <exception>
 #include <memory>
+#include <vector>
 
 #define ERROR_ALLOCATE_MEMORY 134
 
 namespace ft {
-    // this class deals with error exception and alloc / dealloc logic
-    template <typename _T, typename _Alloc, typename _IsStatic>
+
+    template <typename _T, typename _Alloc>
     class _Vector_alloc_base {
         typedef _Alloc                                  allocator_type;
         typedef _T                                      value_type;
@@ -19,17 +21,19 @@ namespace ft {
 
         allocator_type get_allocate() const { return _data_allocator; };
 
+        _Vector_alloc_base(const allocator_type& __a) : _data_allocator(__a),
+                                                        _start(0),
+                                                        _finish(0),
+                                                        _end_of_storage(0)
+        {};
+
         protected :
             allocator_type   _data_allocator;
             pointer         _start;
             pointer         _finish;
             pointer         _end_of_storage;
-
-            _Vector_alloc_base(const allocator_type& __a) : _data_allocator(__a),
-                                                            _start(ft::nullptr_t),
-                                                            _finish(ft::nullptr_t),
-                                                            _end_of_storage(ft::nullptr_t)
-            {};
+            size_type       _size;
+            size_type       _capacity;
 
             pointer _allocate(size_type __n) {
                 return _data_allocator.allocate(__n);
@@ -38,54 +42,53 @@ namespace ft {
             void    _deallocate(pointer __p, size_type __n) {
                 if (__p) _data_allocator.deallocate(__p, __n);
             }
+
+            allocator_type get_allocator() const { return _data_allocator; }
+
+            size_type
+            set_storage(size_type __n, const allocator_type& __Alloc = allocator_type()) {
+                try {
+                    _start      = __n ? _data_allocator.allocate(__n) : 0;
+                    _finish     = __n ? _start + __n : 0;
+                    _size       = __n ? __n : 0;
+                    _capacity   = __n ? _start + __n : 0;
+                }
+                catch (...) {
+                    exit(ERROR_ALLOCATE_MEMORY);
+                }
+            }
+
+            void
+            clear_storage(void) {
+                if (_start) {
+                    _data_allocator.deallocate(_start, _size);
+                    _start = 0;
+                    _finish = 0;
+                    _end_of_storage = 0;
+                    _size = 0;
+                    _capacity = 0;
+                }
+            }
     };
 
     template <typename _T, typename _Alloc>
-    class _Vector_alloc_base<_T, _Alloc, true> {
-        typedef _Alloc                                  allocator_type;
-        typedef _T                                      value_type;
-        typedef _T*                                     pointer;
-        typedef size_t                                  size_type;
-
-        allocator_type get_allocate() const { return allocator_type(); };
-
-        protected :
-            pointer         _start;
-            pointer         _finish;
-            pointer         _end_of_storage;
-
-            _Vector_alloc_base(const allocator_type& __a) :     _start(ft::nullptr_t),
-                                                                _finish(ft::nullptr_t),
-                                                                _end_of_storage(ft::nullptr_t)
-            {};
-
-            pointer _allocate(size_type __n) {
-                return _Alloc.allocate(__n);
-            }
-
-            void    _deallocate(pointer __p, size_type __n) {
-                if (__p) _Alloc.deallocate(__p, __n);
-            }
-    };
-    
-
-    template <typename _T, typename _Alloc>
-    class _vector_base : public _vector_alloc_base<_T, _Alloc, true> {
+    class _vector_base : public _Vector_alloc_base<_T, _Alloc> {
         public :
-            typedef _Alloc                                  allocator_type;
-            typedef typename _Alloc::value_type             value_type;
-            typedef typename _Alloc::pointer                pointer;
-            typedef typename _Alloc::const_pointer          const_pointer;
-            typedef typename _Alloc::reference              reference;
-            typedef typename _Alloc::const_reference        const_reference;
-            typedef typename _Alloc::size_type              size_type;
-            typedef typename _Alloc::difference_type        difference_type;
+            typedef typename _Vector_alloc_base<_T, _Alloc>  _base;
+            typedef typename _base::allocator_type           allocator_type;
 
         protected :
-            allocator_type   _data_allocator;
-            pointer         _C;
-            pointer         _end_of_storage;
+            _vector_base(const allocator_type& __a) : _base(__a) {};
+            _vector_base(size_type __n, const allocator_type& __a) : _base(__a) {
+                this->_start = this->set_storage(__n);
+                this->_finish = this->_start;
+                this->_end_of_storage = this->_start + __n;
+            };
 
+            ~_vector_base() {
+                this->clear_storage();
+            };
+        
             void    _throw_out_of_range() const {
                 throw std::out_of_range("vector");
             }
@@ -97,10 +100,13 @@ namespace ft {
 
     template <typename _T, typename _Alloc = std::allocator<_T> >
     class Vector : public _vector_base<_T, _Alloc> {
+        private :
+            typedef _vector_base<_T, _Alloc>::_base                             _base;
+            typedef Vector<_T, _Alloc>                                          vector_type;
+
         public :
             typedef _T                                                          value_type;
             typedef _Alloc                                                      allocator_type;
-            typedef Vector<_T, _Alloc>                                          vector_type;
             typedef std::size_t                                                 size_type;
             typedef std::ptrdiff_t                                              difference_type;
             typedef value_type&                                                 reference;
@@ -112,17 +118,32 @@ namespace ft {
             typedef ft::Reverse_iterator<iterator>                              reverse_iterator;
             typedef ft::Reverse_iterator<const_iterator>                        const_reverse_iterator;
 
+        protected :
+            using _Vector_alloc_base<_T, _Alloc>::_start;
+            using _Vector_alloc_base<_T, _Alloc>::_finish;
+            using _Vector_alloc_base<_T, _Alloc>::_end_of_storage;
+            usign _Vector_alloc_base<_T, _Alloc>::_allocate;
+            usign _Vector_alloc_base<_T, _Alloc>::_deallocate;
+
+
+        public :
 
             // constructors
             explicit Vector(const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
-                this->allocate(0);
+                this->get_allocator().set_storage(0);
             };
+
+            Vector(size_type __n, const value_type& __value = value_type(), const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__n, __a) {
+                this->get_allocator().set_storage(__n);
+                for (size_type i = 0; i < __n; i++)
+                    this->push_back(__value);
+            };    
 
             template <class InputIterator>
             Vector(InputIterator __first, InputIterator __last, const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
                 difference_type __n = ft::distance(__first, __last);
                 
-                this->allocate(__n);
+                this->get_allocator().set_storage(__n);
                 while (__n--) { this->push_back(*__first++); }
             };
 
@@ -131,13 +152,13 @@ namespace ft {
             //     for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
             // };
 
-            Vector(const Vector& __x) { *this = _x; } // 둘 중에 뭐가 맞을까...
+            Vector(const Vector& __x) { *this = __x; } // which one is better?
             
             Vector&
             operator= (const Vector& __x) {
                 if (this != &__x) {
                     this->clear();
-                    this->allocate(__x.size());
+                    this->get_allocator().set_storage(__x.size());
                     for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
                 }
                 return *this;
@@ -145,32 +166,129 @@ namespace ft {
             
             ~Vector() {
                 this->clear();
-                this->allocator_type().deallocate();
             };
 
-        private :
-            size_type           _size_;
+            void
+            clear(void) {
+                this->clear_storage();
+            }
+
 
             size_type
             size (void) const {
-                return this->_size_;
+                return size_type(this->end() - this->begin());
             }
 
             size_type
             max_size (void) const {
-                return this->allocator_type().max_size();
+                // size_type(-1) / sizeof(value_type)
+                return this->allocator_type().max_size(); 
             }
 
             size_type
-            allocate(size_type __n, const allocator_type& _Alloc = allocator_type()) {
-                try {
-                    _C      = __n ? this->allocate(__n) : 0;
-                    _size   = 0;
-                    _end_of_storage = _start + __n;
-                }
-                catch (...) {
-                    exit(ERROR_ALLOCATE_MEMORY);
-                }
+            capacity (void) const {
+                return size_type(const_iterator(this->_end_of_storage) - this->begin());
+            }
+
+            bool
+            empty (void) const {
+                return (begin() == end());
+            }
+
+            void
+            resize(size_type __n) {
+                resize(__n, this->value_type);
+            }
+
+
+            /*
+            *   iterators
+            */
+
+            iterator
+            begin (void) {
+                return iterator(this->_start);
+            }
+
+            const_iterator
+            begin (void) const {
+                return const_iterator(this->_start);
+            }
+
+            iterator
+            end (void) {
+                return iterator(this->_finish);
+            }
+
+            const_iterator
+            end (void) const {
+                return const_iterator(this->_finish);
+            }
+
+            reverse_iterator
+            rbegin (void) {
+                return reverse_iterator(end());
+            }
+
+            const_reverse_iterator
+            rbegin (void) const {
+                return const_reverse_iterator(end());
+            }
+
+            reverse_iterator
+            rend (void) {
+                return reverse_iterator(begin());
+            }
+
+            const_reverse_iterator
+            rend (void) const {
+                return const_reverse_iterator(begin());
+            }
+
+        //     /*
+        //     *   element access
+        //     */
+
+            reference
+            operator[] (size_type __n) {
+                return *(this->begin() + __n);
+            }
+
+            const_reference
+            operator[] (size_type __n) const {
+                return *(this->begin() + __n);
+            }
+
+            reference
+            at (size_type __n) {
+                if (__n >= this->_size_) { this->_throw_out_of_range(); }
+                return *(this->begin() + __n);
+            }
+
+            const_reference
+            at (size_type __n) const {
+                if (__n >= this->_size_) { this->_throw_out_of_range(); }
+                return *(this->begin() + __n);
+            }
+
+            reference
+            front (void) {
+                return *(this->begin());
+            }
+
+            const_reference
+            front (void) const {
+                return *(this->begin());
+            }
+
+            reference
+            back (void) {
+                return *(this->begin() + this->_size_ - 1);
+            }
+
+            const_reference
+            back (void) const {
+                return *(this->begin() + this->_size_ - 1);
             }
     };
 } // namespace ft

@@ -2,9 +2,8 @@
 #define __FT_CONTAINERS_COMPRESSED_PAIR__
 
 #include <utility>
-#include "definition.hpp"
 
-namespace {
+namespace ft {
     template<class _T1, class _T2>
     struct pair {
         public :
