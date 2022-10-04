@@ -165,6 +165,35 @@ namespace ft {
             }
 
 
+            void assign(size_type __n, const value_type& __u) {
+                this->clear();
+                this->_start = this->set_storage(__n);
+                while (__n--) this->push_back(__u);
+            }
+
+            template <class InputIterator>
+            void assign(InputIterator __first, InputIterator __last) {
+                this->clear();
+                for (; __first != __last; __first++) {
+                    this->push_back(*__first);
+                }
+            }
+
+            iterator
+            insert(iterator __pos, const value_type& __u) {
+            
+            };
+            
+            void
+            insert(iterator __pos, size_type __n, const value_type& __u) {
+
+            };
+
+            template <class InputIterator>
+            void insert(iterator __pos, InputIterator __first, InputIterator __last) {
+    
+            };
+
 
 
 
