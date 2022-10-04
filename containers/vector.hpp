@@ -14,18 +14,19 @@ namespace ft {
 
     template <typename _T, typename _Alloc>
     class _Vector_alloc_base {
-        typedef _Alloc                                  allocator_type;
-        typedef _T                                      value_type;
-        typedef _T*                                     pointer;
-        typedef size_t                                  size_type;
+        public :
+            typedef _Alloc                                  allocator_type;
+            typedef _T                                      value_type;
+            typedef _T*                                     pointer;
+            typedef size_t                                  size_type;
 
-        allocator_type get_allocate() const { return _data_allocator; };
+            allocator_type get_allocate() const { return _data_allocator; };
 
-        _Vector_alloc_base(const allocator_type& __a) : _data_allocator(__a),
-                                                        _start(0),
-                                                        _finish(0),
-                                                        _capacity(0)
-        {};
+            _Vector_alloc_base(const allocator_type& __a) : _data_allocator(__a),
+                                                            _start(0),
+                                                            _finish(0),
+                                                            _capacity(0)
+            {};
 
         protected :
             allocator_type   _data_allocator;
@@ -39,6 +40,11 @@ namespace ft {
 
             void    _deallocate(pointer __p, size_type __n) {
                 if (__p) _data_allocator.deallocate(__p, __n);
+            }
+
+            size_type
+            get_capacity() const {
+                return _capacity - _start;
             }
 
             allocator_type get_allocator() const { return _data_allocator; }
@@ -64,6 +70,39 @@ namespace ft {
                     _finish = 0;
                     _capacity = 0;
                 }
+            }
+            
+            size_type
+            size() const {
+                return _finish - _start;
+            }
+
+            size_type
+            expand(size_type __n) {
+                size_type offset;
+
+                if (this->get_capacity() < __n) {
+                    try {
+                        size_type __new_size = this->get_capacity() * 2 < __n ? __n : this->get_capacity() * 2;
+                        value_type* __tmp = _data_allocator.allocate(__new_size);
+                        offset = __tmp - _start;
+
+                        size_type __i = 0;
+                        size_type __size = this->size();
+                        while (__i < __size) {
+                            *(__tmp + i) = *(_start + i);
+                            ++__i;
+                        }
+
+                        this->get_allocate.deallocate(_start, this->get_capacity());
+                        _start = __tmp;
+                        _finish = __tmp + __size;
+                        _capacity = __tmp + __new_size;
+                    } catch (...) {
+                        exit(ERROR_ALLOCATE_MEMORY);
+                    }
+                }
+                return offset;
             }
     };
 
@@ -181,7 +220,8 @@ namespace ft {
 
             iterator
             insert(iterator __pos, const value_type& __u) {
-            
+                size_type __n = __pos - this->begin();
+
             };
             
             void
@@ -193,21 +233,6 @@ namespace ft {
             void insert(iterator __pos, InputIterator __first, InputIterator __last) {
     
             };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         //     size_type
         //     size (void) const {
