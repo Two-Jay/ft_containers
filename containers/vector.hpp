@@ -24,16 +24,14 @@ namespace ft {
         _Vector_alloc_base(const allocator_type& __a) : _data_allocator(__a),
                                                         _start(0),
                                                         _finish(0),
-                                                        _end_of_storage(0)
+                                                        _capacity(0)
         {};
 
         protected :
             allocator_type   _data_allocator;
             pointer         _start;
             pointer         _finish;
-            pointer         _end_of_storage;
-            size_type       _size;
-            size_type       _capacity;
+            pointer         _capacity;
 
             pointer _allocate(size_type __n) {
                 return _data_allocator.allocate(__n);
@@ -48,9 +46,9 @@ namespace ft {
             size_type
             set_storage(size_type __n, const allocator_type& __Alloc = allocator_type()) {
                 try {
+                    _data_allocator = __Alloc;
                     _start      = __n ? _data_allocator.allocate(__n) : 0;
-                    _finish     = __n ? _start + __n : 0;
-                    _size       = __n ? __n : 0;
+                    _finish     = __n ? _start : 0;
                     _capacity   = __n ? _start + __n : 0;
                 }
                 catch (...) {
@@ -61,11 +59,9 @@ namespace ft {
             void
             clear_storage(void) {
                 if (_start) {
-                    _data_allocator.deallocate(_start, _size);
+                    _data_allocator.deallocate(_start, _capacity);
                     _start = 0;
                     _finish = 0;
-                    _end_of_storage = 0;
-                    _size = 0;
                     _capacity = 0;
                 }
             }
@@ -81,8 +77,6 @@ namespace ft {
             _vector_base(const allocator_type& __a) : _base(__a) {};
             _vector_base(size_type __n, const allocator_type& __a) : _base(__a) {
                 this->_start = this->set_storage(__n);
-                this->_finish = this->_start;
-                this->_end_of_storage = this->_start + __n;
             };
 
             ~_vector_base() {
@@ -121,9 +115,7 @@ namespace ft {
         protected :
             using _Vector_alloc_base<_T, _Alloc>::_start;
             using _Vector_alloc_base<_T, _Alloc>::_finish;
-            using _Vector_alloc_base<_T, _Alloc>::_end_of_storage;
-            usign _Vector_alloc_base<_T, _Alloc>::_allocate;
-            usign _Vector_alloc_base<_T, _Alloc>::_deallocate;
+            using _Vector_alloc_base<_T, _Alloc>::_capacity;
 
 
         public :
@@ -132,11 +124,10 @@ namespace ft {
             explicit Vector(const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
                 this->get_allocator().set_storage(0);
             };
-
+            
             Vector(size_type __n, const value_type& __value = value_type(), const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__n, __a) {
                 this->get_allocator().set_storage(__n);
-                for (size_type i = 0; i < __n; i++)
-                    this->push_back(__value);
+                while (__n--) { this->push_back(value); }
             };    
 
             template <class InputIterator>
@@ -174,122 +165,137 @@ namespace ft {
             }
 
 
-            size_type
-            size (void) const {
-                return size_type(this->end() - this->begin());
-            }
-
-            size_type
-            max_size (void) const {
-                // size_type(-1) / sizeof(value_type)
-                return this->allocator_type().max_size(); 
-            }
-
-            size_type
-            capacity (void) const {
-                return size_type(const_iterator(this->_end_of_storage) - this->begin());
-            }
-
-            bool
-            empty (void) const {
-                return (begin() == end());
-            }
-
-            void
-            resize(size_type __n) {
-                resize(__n, this->value_type);
-            }
 
 
-            /*
-            *   iterators
-            */
 
-            iterator
-            begin (void) {
-                return iterator(this->_start);
-            }
 
-            const_iterator
-            begin (void) const {
-                return const_iterator(this->_start);
-            }
 
-            iterator
-            end (void) {
-                return iterator(this->_finish);
-            }
 
-            const_iterator
-            end (void) const {
-                return const_iterator(this->_finish);
-            }
 
-            reverse_iterator
-            rbegin (void) {
-                return reverse_iterator(end());
-            }
 
-            const_reverse_iterator
-            rbegin (void) const {
-                return const_reverse_iterator(end());
-            }
 
-            reverse_iterator
-            rend (void) {
-                return reverse_iterator(begin());
-            }
 
-            const_reverse_iterator
-            rend (void) const {
-                return const_reverse_iterator(begin());
-            }
+
+
+
+
+
+        //     size_type
+        //     size (void) const {
+        //         return size_type(this->end() - this->begin());
+        //     }
+
+        //     size_type
+        //     max_size (void) const {
+        //         // size_type(-1) / sizeof(value_type)
+        //         return this->allocator_type().max_size(); 
+        //     }
+
+        //     size_type
+        //     capacity (void) const {
+        //         return size_type(const_iterator(this->_end_of_storage) - this->begin());
+        //     }
+
+        //     bool
+        //     empty (void) const {
+        //         return (begin() == end());
+        //     }
+
+        //     void
+        //     resize(size_type __n) {
+        //         resize(__n, this->value_type);
+        //     }
+
 
         //     /*
-        //     *   element access
+        //     *   iterators
         //     */
 
-            reference
-            operator[] (size_type __n) {
-                return *(this->begin() + __n);
-            }
+        //     iterator
+        //     begin (void) {
+        //         return iterator(this->_start);
+        //     }
 
-            const_reference
-            operator[] (size_type __n) const {
-                return *(this->begin() + __n);
-            }
+        //     const_iterator
+        //     begin (void) const {
+        //         return const_iterator(this->_start);
+        //     }
 
-            reference
-            at (size_type __n) {
-                if (__n >= this->_size_) { this->_throw_out_of_range(); }
-                return *(this->begin() + __n);
-            }
+        //     iterator
+        //     end (void) {
+        //         return iterator(this->_finish);
+        //     }
 
-            const_reference
-            at (size_type __n) const {
-                if (__n >= this->_size_) { this->_throw_out_of_range(); }
-                return *(this->begin() + __n);
-            }
+        //     const_iterator
+        //     end (void) const {
+        //         return const_iterator(this->_finish);
+        //     }
 
-            reference
-            front (void) {
-                return *(this->begin());
-            }
+        //     reverse_iterator
+        //     rbegin (void) {
+        //         return reverse_iterator(end());
+        //     }
 
-            const_reference
-            front (void) const {
-                return *(this->begin());
-            }
+        //     const_reverse_iterator
+        //     rbegin (void) const {
+        //         return const_reverse_iterator(end());
+        //     }
 
-            reference
-            back (void) {
-                return *(this->begin() + this->_size_ - 1);
-            }
+        //     reverse_iterator
+        //     rend (void) {
+        //         return reverse_iterator(begin());
+        //     }
 
-            const_reference
-            back (void) const {
-                return *(this->begin() + this->_size_ - 1);
-            }
+        //     const_reverse_iterator
+        //     rend (void) const {
+        //         return const_reverse_iterator(begin());
+        //     }
+
+        // //     /*
+        // //     *   element access
+        // //     */
+
+        //     reference
+        //     operator[] (size_type __n) {
+        //         return *(this->begin() + __n);
+        //     }
+
+        //     const_reference
+        //     operator[] (size_type __n) const {
+        //         return *(this->begin() + __n);
+        //     }
+
+        //     reference
+        //     at (size_type __n) {
+        //         if (__n >= this->_size_) { this->_throw_out_of_range(); }
+        //         return *(this->begin() + __n);
+        //     }
+
+        //     const_reference
+        //     at (size_type __n) const {
+        //         if (__n >= this->_size_) { this->_throw_out_of_range(); }
+        //         return *(this->begin() + __n);
+        //     }
+
+        //     reference
+        //     front (void) {
+        //         return *(this->begin());
+        //     }
+
+        //     const_reference
+        //     front (void) const {
+        //         return *(this->begin());
+        //     }
+
+        //     reference
+        //     back (void) {
+        //         return *(this->begin() + this->_size_ - 1);
+        //     }
+
+        //     const_reference
+        //     back (void) const {
+        //         return *(this->begin() + this->_size_ - 1);
+        //     }
     };
 } // namespace ft
 
