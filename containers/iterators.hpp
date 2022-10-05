@@ -7,18 +7,18 @@
 namespace ft {
     template<class _Iter>
     class Reverse_iterator 
-        : public ft::Iterator <typename ft::Iterator_traits<_Iter>::iterator_category,
-                            typename ft::Iterator_traits<_Iter>::value_type,
-                            typename ft::Iterator_traits<_Iter>::difference_type,
-                            typename ft::Iterator_traits<_Iter>::pointer,
-                            typename ft::Iterator_traits<_Iter>::reference>
+        : public ft::Iterator <typename ft::iterator_traits<_Iter>::iterator_category,
+                            typename ft::iterator_traits<_Iter>::value_type,
+                            typename ft::iterator_traits<_Iter>::difference_type,
+                            typename ft::iterator_traits<_Iter>::pointer,
+                            typename ft::iterator_traits<_Iter>::reference>
     {
         public :
-            typedef typename ft::Iterator_traits<_Iter>::difference_type    difference_type;
-            typedef typename ft::Iterator_traits<_Iter>::value_type         value_type;
-            typedef typename ft::Iterator_traits<_Iter>::pointer            pointer;
-            typedef typename ft::Iterator_traits<_Iter>::reference          reference;
-            typedef typename ft::Iterator_traits<_Iter>::iterator_category  iterator_category;
+            typedef typename ft::iterator_traits<_Iter>::difference_type    difference_type;
+            typedef typename ft::iterator_traits<_Iter>::value_type         value_type;
+            typedef typename ft::iterator_traits<_Iter>::pointer            pointer;
+            typedef typename ft::iterator_traits<_Iter>::reference          reference;
+            typedef typename ft::iterator_traits<_Iter>::iterator_category  iterator_category;
         protected :
             _Iter   _current;
 
@@ -112,33 +112,33 @@ namespace ft {
     }
 
     template <class _Iter1, class _Iter2>
-    typename ft::Iterator_traits<_Iter1>::difference_type
+    typename ft::iterator_traits<_Iter1>::difference_type
     operator-(const Reverse_iterator<_Iter1>& __x, const Reverse_iterator<_Iter2>& __y) {
         return __y.base() - __x.base();
     }
 
     template <class _Iter>
     Reverse_iterator<_Iter>
-    operator+(typename ft::Iterator_traits<_Iter>::difference_type __n, const Reverse_iterator<_Iter>& __x) {
+    operator+(typename ft::iterator_traits<_Iter>::difference_type __n, const Reverse_iterator<_Iter>& __x) {
         return Reverse_iterator<_Iter>(__x.base() - __n);
     }
 
 
     template<class _Iter, class _Container>
     class Random_access_iterator
-        : public ft::Iterator <typename ft::Iterator_traits<_Iter>::iterator_category,
-                            typename ft::Iterator_traits<_Iter>::value_type,
-                            typename ft::Iterator_traits<_Iter>::difference_type,
-                            typename ft::Iterator_traits<_Iter>::pointer,
-                            typename ft::Iterator_traits<_Iter>::reference>
+        : public ft::Iterator <typename ft::iterator_traits<_Iter>::iterator_category,
+                            typename ft::iterator_traits<_Iter>::value_type,
+                            typename ft::iterator_traits<_Iter>::difference_type,
+                            typename ft::iterator_traits<_Iter>::pointer,
+                            typename ft::iterator_traits<_Iter>::reference>
     {
         protected :
             _Iter   _current;
 
         public :
-            typedef typename ft::Iterator_traits<_Iter>::difference_type    difference_type;
-            typedef typename ft::Iterator_traits<_Iter>::reference          reference;
-            typedef typename ft::Iterator_traits<_Iter>::pointer            pointer;
+            typedef typename ft::iterator_traits<_Iter>::difference_type    difference_type;
+            typedef typename ft::iterator_traits<_Iter>::reference          reference;
+            typedef typename ft::iterator_traits<_Iter>::pointer            pointer;
 
         Random_access_iterator() : _current(_Iter()) {};
 

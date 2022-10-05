@@ -60,12 +60,13 @@ namespace ft {
                 catch (...) {
                     exit(ERROR_ALLOCATE_MEMORY);
                 }
+                return __n;
             }
 
             void
             clear_storage(void) {
                 if (_start) {
-                    _data_allocator.deallocate(_start, _capacity);
+                    _data_allocator.deallocate(_start, get_capacity() * sizeof(value_type));
                     _start = 0;
                     _finish = 0;
                     _capacity = 0;
@@ -84,17 +85,17 @@ namespace ft {
                 if (this->get_capacity() < __n) {
                     try {
                         size_type __new_size = this->get_capacity() * 2 < __n ? __n : this->get_capacity() * 2;
-                        value_type* __tmp = _data_allocator.allocate(__new_size);
+                        value_type* __tmp = this->get_allocator().allocate(__new_size);
                         offset = __tmp - _start;
 
                         size_type __i = 0;
                         size_type __size = this->size();
                         while (__i < __size) {
-                            *(__tmp + i) = *(_start + i);
+                            *(__tmp + __i) = *(_start + __i);
                             ++__i;
                         }
 
-                        this->get_allocate.deallocate(_start, this->get_capacity());
+                        this->get_allocator().deallocate(_start, this->get_capacity());
                         _start = __tmp;
                         _finish = __tmp + __size;
                         _capacity = __tmp + __new_size;
@@ -109,8 +110,9 @@ namespace ft {
     template <typename _T, typename _Alloc>
     class _vector_base : public _Vector_alloc_base<_T, _Alloc> {
         public :
-            typedef typename _Vector_alloc_base<_T, _Alloc>  _base;
-            typedef typename _base::allocator_type           allocator_type;
+            typedef _Vector_alloc_base<_T, _Alloc>              _base;
+            typedef typename _base::allocator_type              allocator_type;
+            typedef size_t                                      size_type;
 
         protected :
             _vector_base(const allocator_type& __a) : _base(__a) {};
@@ -134,7 +136,7 @@ namespace ft {
     template <typename _T, typename _Alloc = std::allocator<_T> >
     class Vector : public _vector_base<_T, _Alloc> {
         private :
-            typedef _vector_base<_T, _Alloc>::_base                             _base;
+            typedef typename _vector_base<_T, _Alloc>::_base                    _base;
             typedef Vector<_T, _Alloc>                                          vector_type;
 
         public :
@@ -152,28 +154,31 @@ namespace ft {
             typedef ft::Reverse_iterator<const_iterator>                        const_reverse_iterator;
 
         protected :
-            using _Vector_alloc_base<_T, _Alloc>::_start;
-            using _Vector_alloc_base<_T, _Alloc>::_finish;
-            using _Vector_alloc_base<_T, _Alloc>::_capacity;
-
+            using _base::_start;
+            using _base::_finish;
+            using _base::get_capacity;
+            using _base::set_storage;
+            using _base::clear_storage;
+            using _base::size;
+            using _base::expand;
 
         public :
 
             // constructors
             explicit Vector(const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
-                this->get_allocator().set_storage(0);
+                this->set_storage(0);
             };
             
             Vector(size_type __n, const value_type& __value = value_type(), const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__n, __a) {
-                this->get_allocator().set_storage(__n);
-                while (__n--) { this->push_back(value); }
+                this->set_storage(__n);
+                while (__n--) { this->push_back(__value); }
             };    
 
             template <class InputIterator>
             Vector(InputIterator __first, InputIterator __last, const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
                 difference_type __n = ft::distance(__first, __last);
-                
-                this->get_allocator().set_storage(__n);
+
+                this->set_storage(__n);
                 while (__n--) { this->push_back(*__first++); }
             };
 
@@ -218,6 +223,19 @@ namespace ft {
                 }
             }
 
+            void
+			push_back (const value_type& _val) {
+				expand(size() + 1);
+				this->get_allocator().construct(_finish, _val);
+				++_finish;
+			}
+
+			void
+			pop_back (void) {
+				allocator_type().destroy(const_cast<pointer>(_start + _finish));
+				--_finish;
+			}
+
             iterator
             insert(iterator __pos, const value_type& __u) {
                 size_type __offset          = this->expand(this->size() + 1);
@@ -250,12 +268,24 @@ namespace ft {
 
             template <class InputIterator>
             void insert(iterator __pos, InputIterator __first, InputIterator __last) {
-    
+                size_t __n = ft::distance(__first, __last);
+                size_type __offset          = this->expand(this->size() + __n);
+                reverse_iterator from       = this->rbegin();
+                reverse_iterator to         = this->rbegin() - __n;
+
+                __pos += __offset;
+                while (from.base() != __pos) {
+                    *to++ = *from++;
+                }
+                while (__first != __last) {
+                    *__pos++ = *__first++;
+                }
+                return __pos;
             };
 
             size_type
             size (void) const {
-                return size_type(this->end() - this->begin());
+                return static_cast<size_type>(this->end() - this->begin());
             }
 
             size_type
@@ -266,7 +296,7 @@ namespace ft {
 
             size_type
             capacity (void) const {
-                return size_type(const_iterator(this->_end_of_storage) - this->begin());
+                return static_cast<size_type>(const_iterator(this->_end_of_storage) - this->begin());
             }
 
             bool
