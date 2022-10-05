@@ -69,6 +69,7 @@
         "list": "cpp",
         "queue": "cpp",
         "set": "cpp",
-        "memory_resource": "cpp"
+        "memory_resource": "cpp",
+        "*.tcc": "cpp"
     }
 }

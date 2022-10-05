@@ -148,10 +148,10 @@ namespace ft {
             typedef const value_type&                                           const_reference;
             typedef typename allocator_type::pointer                            pointer;
             typedef typename allocator_type::const_pointer                      const_pointer;
-            typedef ft::Random_access_iterator<value_type, vector_type>         iterator;
-            typedef ft::Random_access_iterator<const value_type, vector_type>   const_iterator;
-            typedef ft::Reverse_iterator<iterator>                              reverse_iterator;
-            typedef ft::Reverse_iterator<const_iterator>                        const_reverse_iterator;
+            typedef ft::random_access_iterator<value_type, vector_type>         iterator;
+            typedef ft::random_access_iterator<const value_type, vector_type>   const_iterator;
+            typedef ft::reverse_iterator<iterator>                              reverse_iterator;
+            typedef ft::reverse_iterator<const_iterator>                        const_reverse_iterator;
 
         protected :
             using _base::_start;

@@ -23,16 +23,29 @@ namespace ft {
     *               r-value reference       rence
     *               function                -
     *
-    */ 
+    */
 
+    template <class _Tp, _Tp __v>
+    struct integral_constant {
+        static const _Tp                    value = __v;
+        typedef _Tp                         value_type;
+        typedef integral_constant           type;
+    };
+
+    template <class _Tp, _Tp __v>
+    const _Tp integral_constant<_Tp, __v>::value;
+
+    template <class>
+    struct __void_t { typedef void type; };
     
+    template <class _Tp>
+    struct __identity { typedef _Tp type; };
 
     template <bool Cond, class T = void>
     struct enable_if {};
 
     template <class T>
     struct enable_if<true, T> { typedef T type; };
-
 
     struct __true_type {
         static const bool value = true;
@@ -45,6 +58,12 @@ namespace ft {
         typedef bool value_type;
         typedef __true_type type;
     };
+
+    template <class _Tp, class _Up>
+    struct is_same : public __false_type {};
+
+    template <class _Tp>
+    struct is_same<_Tp, _Tp> : public __true_type {};
 
     /*
     *   is_void
@@ -116,6 +135,8 @@ namespace ft {
 
     template <class _Tp>
     struct is_nothrow_default_constructible : __false_type {};
+
+
 }
 
 #endif // __FT_CONTAINERS__TYPE_TRAIT__

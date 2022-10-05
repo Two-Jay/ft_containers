@@ -2,6 +2,7 @@
 #define __FT_CONTAINERS_ITERATOR_BASE__
 
 #include <cstddef> // for ptrdiff_t
+#include "./type_traits.hpp"
 
 namespace ft {
 	struct input_iterator_tag {};
@@ -10,34 +11,71 @@ namespace ft {
 	struct bidirectional_iterator_tag : forward_iterator_tag {};
 	struct random_access_iterator_tag : bidirectional_iterator_tag {};
 
+	// template <class _Iter>
+	// struct iterator_traits {
+	// 	typedef typename _Iter::difference_type       difference_type;
+	// 	typedef typename _Iter::value_type            value_type;
+	// 	typedef typename _Iter::pointer               pointer;
+	// 	typedef typename _Iter::reference             reference;
+	// 	typedef typename _Iter::iterator_category     iterator_category;
+	// };
 
+	// template <class _Tp>
+	// struct iterator_traits<_Tp*> {
+	// 	typedef std::ptrdiff_t                  	difference_type;
+	// 	typedef ft::random_access_iterator_tag  	iterator_category;
+	// 	typedef _Tp                              	value_type;
+	// 	typedef _Tp*                            		pointer;
+	// 	typedef _Tp&                            		reference;
+	// };
 
-	template <class _T>
-	struct iterator_traits<_T*> {
-		typedef std::ptrdiff_t                  	difference_type;
-		typedef ft::random_access_iterator_tag  	iterator_category;
-		typedef _T                              	value_type;
-		typedef _T*                            		pointer;
-		typedef _T&                            		reference;
+	// template <class _Tp>
+	// struct iterator_traits<const _Tp*> {
+	// 	typedef std::ptrdiff_t                  	difference_type;
+	// 	typedef ft::random_access_iterator_tag		iterator_category;
+	// 	typedef _Tp               	              	value_type;
+	// 	typedef const _Tp*   	                  	pointer;
+	// 	typedef const _Tp&	                      	reference;
+	// };
+
+	template <class _Tp, bool>
+	struct __iterator_traits {
+		typedef std::ptrdiff_t                  		difference_type;
+		typedef ft::random_access_iterator_tag  		iterator_category;
+		typedef _Tp                              		value_type;
+		typedef _Tp*                            		pointer;
+		typedef _Tp&                            		reference;
 	};
 
-	template <class _T>
-	struct iterator_traits<const _T*> {
-		typedef std::ptrdiff_t                  	difference_type;
-		typedef ft::random_access_iterator_tag		iterator_category;
-		typedef _T               	              	value_type;
-		typedef const _T*   	                  	pointer;
-		typedef const _T&	                      	reference;
+	template <class _Tp>
+	struct __iterator_traits<_Tp, true> {
+		typedef typename _Tp::difference_type       	difference_type;
+		typedef typename _Tp::value_type            	value_type;
+		typedef typename _Tp::pointer               	pointer;
+		typedef typename _Tp::reference             	reference;
+		typedef typename _Tp::iterator_category     	iterator_category;
 	};
 
-	template <class _Iter>
-	struct iterator_traits {
-		typedef typename _Iter::difference_type       difference_type;
-		typedef typename _Iter::value_type            value_type;
-		typedef typename _Iter::pointer               pointer;
-		typedef typename _Iter::reference             reference;
-		typedef typename _Iter::iterator_category     iterator_category;
+	template<class _Iter>
+	struct __has_iterator_typedefs {
+		private :
+			struct __two {char __lx; char __lxx;};
+			template <class _Up> static __two __test(...);
+			template <class _Up> static char __test(
+				typename ft::__void_t<typename _Up::iterator_category>::type* = 0,
+				typename ft::__void_t<typename _Up::difference_type>::type* = 0,
+				typename ft::__void_t<typename _Up::value_type>::type* = 0,
+				typename ft::__void_t<typename _Up::reference>::type* = 0,
+				typename ft::__void_t<typename _Up::pointer>::type* = 0
+			);
+		public :
+			static const bool value = sizeof(__test<_Iter>(0,0,0,0,0)) == 1;
 	};
+
+	template<class _Iter>
+	struct iterator_traits : __iterator_traits <_Iter, __has_iterator_typedefs<_Iter>::value>
+	{};
+
 
 	template <
 		class _Category,
@@ -56,12 +94,12 @@ namespace ft {
 
 	template <class _Iter>
 	typename ft::iterator_traits<_Iter>::iterator_category _iterator_category(const _Iter&) {
-		return ft::iterator_traits<_Iter>::iterator_category();
+		return typename ft::iterator_traits<_Iter>::iterator_category();
 	}
 
 	template <class _Iter>
 	typename ft::iterator_traits<_Iter>::difference_type _difference_type(const _Iter&) {
-		return ft::iterator_traits<_Iter>::difference_type();
+		return typename ft::iterator_traits<_Iter>::difference_type();
 	}
 
 	template <class _Iter>

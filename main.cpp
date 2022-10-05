@@ -6,8 +6,6 @@
 // using namespace std;
 
 int main(){
-    // ft::iterator_traits<int> a;
-    std::iterator_traits<int> b;
-
+    ft::Vector<int> a(10, 5);
     return 0;
 }
