@@ -21,6 +21,15 @@ namespace ft {
 	};
 
 	template <class _Tp>
+	struct __iterator_traits<const _Tp, false> {
+		typedef std::ptrdiff_t                  		difference_type;
+		typedef ft::random_access_iterator_tag  		iterator_category;
+		typedef const _Tp                              	value_type;
+		typedef const _Tp*                            	pointer;
+		typedef const _Tp&                            	reference;
+	};
+
+	template <class _Tp>
 	struct __iterator_traits<_Tp, true> {
 		typedef typename _Tp::difference_type       	difference_type;
 		typedef typename _Tp::value_type            	value_type;
@@ -57,7 +66,7 @@ namespace ft {
 		class _Pointer = _T*,
 		class _Reference = _T&
 	>
-	struct Iterator {
+	struct iterator {
 		typedef _Category                        	iterator_category;
 		typedef _T                               	value_type;
 		typedef _Distance                        	difference_type;

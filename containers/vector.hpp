@@ -13,7 +13,7 @@
 namespace ft {
 
     template <typename _T, typename _Alloc>
-    class _Vector_alloc_base {
+    class _vector_alloc_base {
         public :
             typedef _Alloc                                  allocator_type;
             typedef _T                                      value_type;
@@ -22,7 +22,7 @@ namespace ft {
 
             allocator_type get_allocate() const { return _data_allocator; };
 
-            _Vector_alloc_base(const allocator_type& __a) : _data_allocator(__a),
+            _vector_alloc_base(const allocator_type& __a) : _data_allocator(__a),
                                                             _start(0),
                                                             _finish(0),
                                                             _capacity(0)
@@ -108,9 +108,9 @@ namespace ft {
     };
 
     template <typename _T, typename _Alloc>
-    class _vector_base : public _Vector_alloc_base<_T, _Alloc> {
+    class _vector_base : public _vector_alloc_base<_T, _Alloc> {
         public :
-            typedef _Vector_alloc_base<_T, _Alloc>              _base;
+            typedef _vector_alloc_base<_T, _Alloc>              _base;
             typedef typename _base::allocator_type              allocator_type;
             typedef size_t                                      size_type;
 
@@ -134,22 +134,23 @@ namespace ft {
     };
 
     template <typename _T, typename _Alloc = std::allocator<_T> >
-    class Vector : public _vector_base<_T, _Alloc> {
+    class vector : public _vector_base<_T, _Alloc> {
         private :
             typedef typename _vector_base<_T, _Alloc>::_base                    _base;
-            typedef Vector<_T, _Alloc>                                          vector_type;
+            typedef vector<_T, _Alloc>                                          vector_type;
 
         public :
             typedef _T                                                          value_type;
+            typedef const _T                                                    const_value_type;
             typedef _Alloc                                                      allocator_type;
             typedef std::size_t                                                 size_type;
             typedef std::ptrdiff_t                                              difference_type;
             typedef value_type&                                                 reference;
             typedef const value_type&                                           const_reference;
-            typedef typename allocator_type::pointer                            pointer;
-            typedef typename allocator_type::const_pointer                      const_pointer;
-            typedef ft::random_access_iterator<pointer, vector_type>         iterator;
-            typedef ft::random_access_iterator<const_pointer, vector_type>   const_iterator;
+            typedef value_type*                                                 pointer;
+            typedef const_value_type*                                           const_pointer;
+            typedef ft::random_access_iterator<pointer, vector_type>            iterator;
+            typedef ft::random_access_iterator<const_pointer, vector_type>      const_iterator;
             typedef ft::reverse_iterator<iterator>                              reverse_iterator;
             typedef ft::reverse_iterator<const_iterator>                        const_reverse_iterator;
 
@@ -165,17 +166,17 @@ namespace ft {
         public :
 
             // constructors
-            explicit Vector(const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
+            explicit vector(const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
                 this->set_storage(0);
             };
             
-            Vector(size_type __n, const value_type& __value = value_type(), const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__n, __a) {
+            vector(size_type __n, const value_type& __value = value_type(), const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__n, __a) {
                 this->set_storage(__n);
                 while (__n--) { this->push_back(__value); }
             };    
 
             template <class InputIterator>
-            Vector(InputIterator __first, InputIterator __last, const allocator_type& __a = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) : _vector_base<_T, _Alloc>(__a) {
+            vector(InputIterator __first, InputIterator __last, const allocator_type& __a = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) : _vector_base<_T, _Alloc>(__a) {
                 difference_type __n = ft::distance(__first, __last);
 
                 this->set_storage(__n);
@@ -187,10 +188,10 @@ namespace ft {
             //     for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
             // };
 
-            Vector(const Vector& __x) { *this = __x; } // which one is better?
+            vector(const vector& __x) { *this = __x; } // which one is better?
             
-            Vector&
-            operator= (const Vector& __x) {
+            vector&
+            operator= (const vector& __x) {
                 if (this != &__x) {
                     this->clear();
                     this->get_allocator().set_storage(__x.size());
@@ -199,7 +200,7 @@ namespace ft {
                 return *this;
             };
             
-            ~Vector() {
+            ~vector() {
                 this->clear();
             };
 

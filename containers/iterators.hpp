@@ -8,7 +8,7 @@ namespace ft
 {
     template <class _Iter>
     class reverse_iterator
-        : public ft::Iterator<typename ft::iterator_traits<_Iter>::iterator_category,
+        : public ft::iterator<typename ft::iterator_traits<_Iter>::iterator_category,
                               typename ft::iterator_traits<_Iter>::value_type,
                               typename ft::iterator_traits<_Iter>::difference_type,
                               typename ft::iterator_traits<_Iter>::pointer,
@@ -142,7 +142,7 @@ namespace ft
 
     template <class _Iter, class _Container>
     class random_access_iterator
-        : public ft::Iterator<typename ft::iterator_traits<_Iter>::iterator_category,
+        : public ft::iterator<typename ft::iterator_traits<_Iter>::iterator_category,
                               typename ft::iterator_traits<_Iter>::value_type,
                               typename ft::iterator_traits<_Iter>::difference_type,
                               typename ft::iterator_traits<_Iter>::pointer,
@@ -215,15 +215,15 @@ namespace ft
             return *this;
         };
 
-        random_access_iterator
-        operator+(const difference_type &__n) const { return random_access_iterator(_current + __n); };
-
         random_access_iterator &
         operator-=(const difference_type &__n)
         {
             _current -= __n;
             return *this;
         };
+
+        random_access_iterator
+        operator+(const difference_type &__n) const { return random_access_iterator(_current + __n); };
 
         random_access_iterator
         operator-(const difference_type &__n) const { return random_access_iterator(_current + __n); };
@@ -237,7 +237,7 @@ namespace ft
         reference
         operator[](const difference_type &__n) { return _current[__n]; };
 
-        const _Iter &
+        const _Iter&
         base() const { return this->_current; };
     };
 

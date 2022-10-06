@@ -6,10 +6,10 @@
 // using namespace std;
 
 int main(){
-    ft::Vector<int> a(10, 5);
+    ft::vector<int> a(10, 5);
 
     std::cout << a.size() << std::endl;
-    for (ft::Vector<int>::iterator it = a.begin(); it != a.end(); it++)
+    for (ft::vector<int>::iterator it = a.begin(); it != a.end(); it++)
         std::cout << *it << std::endl;
     return 0;
 }
