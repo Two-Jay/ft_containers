@@ -53,7 +53,7 @@ namespace ft {
             set_storage(size_type __n, const allocator_type& __Alloc = allocator_type()) {
                 try {
                     _data_allocator = __Alloc;
-                    _start      = __n ? _data_allocator.allocate(__n) : 0;
+                    _start      = __n ? this->_allocate(__n) : 0;
                     _finish     = __n ? _start : 0;
                     _capacity   = __n ? _start + __n : 0;
                 }
@@ -66,7 +66,7 @@ namespace ft {
             void
             clear_storage(void) {
                 if (_start) {
-                    _data_allocator.deallocate(_start, get_capacity() * sizeof(value_type));
+                    _deallocate(_start, get_capacity() * sizeof(value_type));
                     _start = 0;
                     _finish = 0;
                     _capacity = 0;
@@ -173,7 +173,7 @@ namespace ft {
             vector(size_type __n, const value_type& __value = value_type(), const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__n, __a) {
                 this->set_storage(__n);
                 while (__n--) { this->push_back(__value); }
-            };    
+            };
 
             template <class InputIterator>
             vector(InputIterator __first, InputIterator __last, const allocator_type& __a = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) : _vector_base<_T, _Alloc>(__a) {
