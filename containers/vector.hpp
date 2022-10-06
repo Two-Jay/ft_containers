@@ -282,7 +282,7 @@ namespace ft {
 
             size_type
             size (void) const {
-                return static_cast<size_type>(this->end() - this->begin());
+                return size_type(this->end() - this->begin());
             }
 
             size_type
@@ -366,14 +366,14 @@ namespace ft {
 
             reference
             at (size_type __n) {
-                if (__n >= this->size()) { this->_throw_out_of_range(); }
-                return *(this->begin() + __n);
+                _range_check(__n);
+                return (*this)[__n];
             }
 
             const_reference
             at (size_type __n) const {
-                if (__n >= this->_size_) { this->_throw_out_of_range(); }
-                return *(this->begin() + __n);
+                _range_check(__n);
+                return (*this)[__n];
             }
 
             reference
@@ -395,6 +395,14 @@ namespace ft {
             back (void) const {
                 return *(this->begin() + this->size() - 1);
             }
+
+
+        private :
+            void
+            _range_check(size_type __n) const {
+                if (__n >= this->size()) this->_throw_out_of_range();
+            }
+
     };
 } // namespace ft
 
