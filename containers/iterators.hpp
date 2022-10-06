@@ -152,16 +152,17 @@ namespace ft
         _Iter _current;
 
     public:
-        typedef typename ft::iterator_traits<_Iter>::difference_type difference_type;
-        typedef typename ft::iterator_traits<_Iter>::reference reference;
-        typedef typename ft::iterator_traits<_Iter>::pointer pointer;
+        typedef typename ft::iterator_traits<_Iter>::difference_type    difference_type;
+        typedef typename ft::iterator_traits<_Iter>::reference          reference;
+        typedef typename ft::iterator_traits<_Iter>::pointer            pointer;
 
         random_access_iterator() : _current(_Iter()){};
 
-        random_access_iterator(const _Iter &__i) : _current(__i){};
+        explicit
+        random_access_iterator(const _Iter& __i) : _current(__i){};
 
         template <typename _It>
-        random_access_iterator(const random_access_iterator<_It, _Container> &__i)
+        inline random_access_iterator(const random_access_iterator<_It, _Container>& __i)
             : _current(__i.base()){};
 
         template <typename _U>
@@ -180,24 +181,32 @@ namespace ft
         operator->() const { return _current; };
 
         random_access_iterator &
-        operator++() const
-        {
+        operator++() const {
             ++_current;
             return *this;
         };
 
         random_access_iterator
-        operator++(int) const { return random_access_iterator(_current++); };
+        operator++(int) {
+            random_access_iterator tmp(_current);
+            _current++;
+
+            return tmp;
+        };
 
         random_access_iterator &
-        operator--() const
-        {
-            --_current;
+        operator--() const {
+            _current--;
             return *this;
         };
 
         random_access_iterator
-        operator--(int) const { return random_access_iterator(_current--); };
+        operator--(int) {
+            random_access_iterator tmp(_current);
+            --_current;
+
+            return tmp;
+        };
 
         random_access_iterator &
         operator+=(const difference_type &__n)

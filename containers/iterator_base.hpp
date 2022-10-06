@@ -11,33 +11,6 @@ namespace ft {
 	struct bidirectional_iterator_tag : forward_iterator_tag {};
 	struct random_access_iterator_tag : bidirectional_iterator_tag {};
 
-	// template <class _Iter>
-	// struct iterator_traits {
-	// 	typedef typename _Iter::difference_type       difference_type;
-	// 	typedef typename _Iter::value_type            value_type;
-	// 	typedef typename _Iter::pointer               pointer;
-	// 	typedef typename _Iter::reference             reference;
-	// 	typedef typename _Iter::iterator_category     iterator_category;
-	// };
-
-	// template <class _Tp>
-	// struct iterator_traits<_Tp*> {
-	// 	typedef std::ptrdiff_t                  	difference_type;
-	// 	typedef ft::random_access_iterator_tag  	iterator_category;
-	// 	typedef _Tp                              	value_type;
-	// 	typedef _Tp*                            		pointer;
-	// 	typedef _Tp&                            		reference;
-	// };
-
-	// template <class _Tp>
-	// struct iterator_traits<const _Tp*> {
-	// 	typedef std::ptrdiff_t                  	difference_type;
-	// 	typedef ft::random_access_iterator_tag		iterator_category;
-	// 	typedef _Tp               	              	value_type;
-	// 	typedef const _Tp*   	                  	pointer;
-	// 	typedef const _Tp&	                      	reference;
-	// };
-
 	template <class _Tp, bool>
 	struct __iterator_traits {
 		typedef std::ptrdiff_t                  		difference_type;

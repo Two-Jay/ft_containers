@@ -80,7 +80,7 @@ namespace ft {
 
             size_type
             expand(size_type __n) {
-                size_type offset;
+                size_type offset = 0;
 
                 if (this->get_capacity() < __n) {
                     try {
@@ -117,7 +117,7 @@ namespace ft {
         protected :
             _vector_base(const allocator_type& __a) : _base(__a) {};
             _vector_base(size_type __n, const allocator_type& __a) : _base(__a) {
-                this->_start = this->set_storage(__n);
+                this->set_storage(__n);
             };
 
             ~_vector_base() {
@@ -148,8 +148,8 @@ namespace ft {
             typedef const value_type&                                           const_reference;
             typedef typename allocator_type::pointer                            pointer;
             typedef typename allocator_type::const_pointer                      const_pointer;
-            typedef ft::random_access_iterator<value_type, vector_type>         iterator;
-            typedef ft::random_access_iterator<const value_type, vector_type>   const_iterator;
+            typedef ft::random_access_iterator<pointer, vector_type>         iterator;
+            typedef ft::random_access_iterator<const_pointer, vector_type>   const_iterator;
             typedef ft::reverse_iterator<iterator>                              reverse_iterator;
             typedef ft::reverse_iterator<const_iterator>                        const_reverse_iterator;
 
@@ -175,7 +175,7 @@ namespace ft {
             };    
 
             template <class InputIterator>
-            Vector(InputIterator __first, InputIterator __last, const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
+            Vector(InputIterator __first, InputIterator __last, const allocator_type& __a = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) : _vector_base<_T, _Alloc>(__a) {
                 difference_type __n = ft::distance(__first, __last);
 
                 this->set_storage(__n);

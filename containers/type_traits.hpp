@@ -2,6 +2,7 @@
 #define __FT_CONTAINERS__TYPE_TRAIT__
 
 #include <stdexcept>
+#include "./iterator_base.hpp"
 
 namespace ft {
 
@@ -135,7 +136,6 @@ namespace ft {
 
     template <class _Tp>
     struct is_nothrow_default_constructible : __false_type {};
-
 
 }
 
