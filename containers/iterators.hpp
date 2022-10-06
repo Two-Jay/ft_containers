@@ -180,8 +180,8 @@ namespace ft
         pointer
         operator->(void) const { return _current; };
 
-        random_access_iterator &
-        operator++() const {
+        random_access_iterator&
+        operator++() {
             ++_current;
             return *this;
         };
@@ -195,7 +195,7 @@ namespace ft
         };
 
         random_access_iterator &
-        operator--() const {
+        operator--() {
             _current--;
             return *this;
         };

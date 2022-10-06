@@ -188,13 +188,13 @@ namespace ft {
             //     for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
             // };
 
-            vector(const vector& __x) { *this = __x; } // which one is better?
+            vector(const vector& __x) : _vector_base<_T, _Alloc>(__x) { *this = __x; } // which one is better?
             
             vector&
             operator= (const vector& __x) {
                 if (this != &__x) {
                     this->clear();
-                    this->get_allocator().set_storage(__x.size());
+                    this->set_storage(__x.size());
                     for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
                 }
                 return *this;
@@ -212,29 +212,25 @@ namespace ft {
 
             void assign(size_type __n, const value_type& __u) {
                 this->clear();
-                this->_start = this->set_storage(__n);
+                this->set_storage(__n);
                 while (__n--) this->push_back(__u);
             }
 
             template <class InputIterator>
-            void assign(InputIterator __first, InputIterator __last) {
+            void assign(InputIterator __first, InputIterator __last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) {
                 this->clear();
-                for (; __first != __last; __first++) {
-                    this->push_back(*__first);
-                }
+                while (__first != __last) { this->push_back(*__first++); }
             }
 
             void
 			push_back (const value_type& _val) {
 				expand(size() + 1);
-				this->get_allocator().construct(_finish, _val);
-				++_finish;
+				this->get_allocator().construct(_finish++, _val);
 			}
 
 			void
 			pop_back (void) {
-				allocator_type().destroy(const_cast<pointer>(_start + _finish));
-				--_finish;
+				allocator_type().destroy(const_cast<pointer>(_start + _finish--));
 			}
 
             iterator
@@ -291,13 +287,12 @@ namespace ft {
 
             size_type
             max_size (void) const {
-                // size_type(-1) / sizeof(value_type)
-                return this->allocator_type().max_size(); 
+                return size_type(-1) / sizeof(value_type); 
             }
 
             size_type
             capacity (void) const {
-                return static_cast<size_type>(const_iterator(this->_end_of_storage) - this->begin());
+                return this->get_capacity();
             }
 
             bool
@@ -371,7 +366,7 @@ namespace ft {
 
             reference
             at (size_type __n) {
-                if (__n >= this->_size_) { this->_throw_out_of_range(); }
+                if (__n >= this->size()) { this->_throw_out_of_range(); }
                 return *(this->begin() + __n);
             }
 
@@ -393,12 +388,12 @@ namespace ft {
 
             reference
             back (void) {
-                return *(this->begin() + this->_size_ - 1);
+                return *(this->begin() + this->size() - 1);
             }
 
             const_reference
             back (void) const {
-                return *(this->begin() + this->_size_ - 1);
+                return *(this->begin() + this->size() - 1);
             }
     };
 } // namespace ft
