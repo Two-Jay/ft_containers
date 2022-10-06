@@ -175,10 +175,10 @@ namespace ft
         ~random_access_iterator(){};
 
         reference
-        operator*() const { return *_current; };
+        operator*(void) const { return *_current; };
 
         pointer
-        operator->() const { return _current; };
+        operator->(void) const { return _current; };
 
         random_access_iterator &
         operator++() const {
@@ -188,8 +188,8 @@ namespace ft
 
         random_access_iterator
         operator++(int) {
-            random_access_iterator tmp(_current);
-            _current++;
+            random_access_iterator tmp(*this);
+            ++_current;
 
             return tmp;
         };
@@ -202,7 +202,7 @@ namespace ft
 
         random_access_iterator
         operator--(int) {
-            random_access_iterator tmp(_current);
+            random_access_iterator tmp(*this);
             --_current;
 
             return tmp;
@@ -237,7 +237,7 @@ namespace ft
         reference
         operator[](const difference_type &__n) { return _current[__n]; };
 
-        const _Iter&
+        _Iter
         base() const { return this->_current; };
     };
 
