@@ -152,6 +152,7 @@ namespace ft
         _Iter _current;
 
     public:
+        typedef _Container                                              container_type;
         typedef typename ft::iterator_traits<_Iter>::difference_type    difference_type;
         typedef typename ft::iterator_traits<_Iter>::reference          reference;
         typedef typename ft::iterator_traits<_Iter>::pointer            pointer;
