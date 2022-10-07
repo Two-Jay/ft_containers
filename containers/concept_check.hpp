@@ -20,6 +20,10 @@ namespace ft {
     struct _same_type_concept {
         void __constraints() {
             typedef typename __require_same<_Tp1, _Tp2>::_Type _Required;
+
+            _Required __x;
+
+            (void)__x;
         }
     };
 
