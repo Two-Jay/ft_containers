@@ -13,6 +13,10 @@ namespace ft {
             typedef _Tp*                                    pointer;
             typedef std::size_t                             size_type;
 
+            _vector_alloc_base ()
+                : _alloc(_Alloc), _start(0), _end_elements(0), _end_storage(0)
+            {}
+
             _vector_alloc_base (const allocator_type& __a)
                 : _alloc(__a), _start(0), _end_elements(0), _end_storage(0)
             {}
@@ -51,6 +55,7 @@ namespace ft {
             typedef typename _Base::allocator_type          allocator_type;
             typedef typename _Base::size_type               size_type;
 
+            _vector_base() : _Base() {};
             _vector_base(const allocator_type& __a) : _Base(__a) {};
             _vector_base(size_type __n, const allocator_type& __a) : _Base(__a) {
                 this->_start = this->_allocate(__n);
@@ -113,10 +118,34 @@ namespace ft {
 
         public :
 
+            vector() : _Base() {}
+
             explicit vector (const allocator_type& __a = allocator_type()) : _Base(__a) {}
 
             vector(size_type __n, const_reference __value, const allocator_type& __a = allocator_type()) : _Base(__n, __a) {
                 _end_elements = std::uninitialized_fill_n(_start, __n, __value);
+            }
+
+            vector (const vector<_Tp, _Alloc>& __v) : _Base(__v.size(), __v.get_allocator()) {
+                _end_elements = std::uninitialized_copy(__v.begin(), __v.end(), _start);
+            }
+
+            template <class _InputIterator>
+            vector (_InputIterator __first, _InputIterator __last, const allocator_type& __a = allocator_type()) : _Base(__a) {
+                typedef typename ft::is_integral<_InputIterator>::value        _isInteger;
+                _initialize_aux(__first, __last, _isInteger());
+            }
+
+            ~vector() {
+                this->_deallocate(_start, _end_storage);
+            }
+
+            vector_type&
+            operator= (const vector_type& __v) {
+                if (this != &__v) {
+                    const size_type __size = __v.size();
+                    if ()
+                }                
             }
 
             allocator_type
@@ -259,6 +288,37 @@ namespace ft {
 
 
         private :
+            
+
+            /*
+            ** auxiliary functions for vector constructor with iterator parameters;
+            */
+            template <class _Integer>
+            void _initialize_aux(_Integer __n, _Integer __value, true) {
+                _start = this->_allocate(__n);
+                _end_elements = std::uninitialized_fill_n(_start, __n, __value);
+                _end_storage = _start + __n;
+            }
+            
+            template <class _InputIterator>
+            void _initialize_aux(_InputIterator __first, _InputIterator __last, false) {
+                typedef typename ft::iterator<_InputIterator>::iterator_category    _InputIterCategory;
+                _range_initialize(__first, __last, _InputIterCategory());
+            }
+
+            template <class _InputIterator>
+            void _range_initialize(_InputIterator __first, _InputIterator __last, ft::input_iterator_tag) {
+                for (; __first != __last ; __first++) this->push_back(*__first);
+            }
+
+            template <class _InputIterator>
+            void _range_initialize(_InputIterator __first, _InputIterator __last, ft::forward_iterator_tag) {
+                size_type   __dist = ft::distance(__first, __last);
+                
+                _start = this->_allocate(__n);
+                _end_elements = std::uninitialized_copy(__first, __last, _start);
+                _end_storage = _start + __n;
+            }
             
     };
 }
