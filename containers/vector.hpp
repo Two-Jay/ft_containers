@@ -53,13 +53,13 @@ namespace ft {
 
             _vector_base(const allocator_type& __a) : _Base(__a) {};
             _vector_base(size_type __n, const allocator_type& __a) : _Base(__a) {
-                _start = this->_allocate(__n);
-                _end_elements = _start;
-                _end_storage = _start + __n;
+                this->_start = this->_allocate(__n);
+                this->_end_elements = this->_start;
+                this->_end_storage = this->_start + __n;
             };
 
-            ~vector_base() {
-                this->_deallocate(_start, this->_get_capacity());
+            ~_vector_base() {
+                this->_deallocate(this->_start, this->_get_capacity());
             }
 
             void
@@ -92,12 +92,12 @@ namespace ft {
             typedef const _Tp&                                              const_reference;
             typedef std::ptrdiff_t                                          difference_type;
 
-            typedef _Base::size_type                                        size_type;
-            typedef _Base::allocator_type                                   allocator_type;
-            typedef random_access_iterator<pointer, vector_type>            iterator;
-            typedef random_access_iterator<const_pointer, vector_type>      const_iterator;
-            typedef reverse_iterator<iterator>                              reverse_iterator;
-            typedef reverse_iterator<const_iterator>                        const_reverse_iterator;
+            typedef typename _Base::size_type                               size_type;
+            typedef typename _Base::allocator_type                          allocator_type;
+            typedef ft::random_access_iterator<pointer, vector_type>            iterator;
+            typedef ft::random_access_iterator<const_pointer, vector_type>      const_iterator;
+            typedef ft::reverse_iterator<iterator>                              reverse_iterator;
+            typedef ft::reverse_iterator<const_iterator>                        const_reverse_iterator;
 
         protected :
             using _Base::_allocate;
@@ -136,8 +136,28 @@ namespace ft {
             }
 
             const_reference
-            operator[] (size_type __n) {
+            operator[] (size_type __n) const {
                 return *(this->begin() + __n);
+            }
+
+            reference
+            front () {
+                return *(this->begin());
+            }
+
+            const_reference
+            front () const {
+                return *(this->begin());
+            }
+
+            reference
+            back () {
+                return *(this->end() - 1);
+            }
+
+            const_reference
+            back () const {
+                return *(this->end() - 1);
             }
 
             /*
@@ -209,8 +229,6 @@ namespace ft {
             capacity() const {
                 return _Base::_get_capcity();
             }
-
-
 
             /*
             ** modifiers
