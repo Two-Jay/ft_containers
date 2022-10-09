@@ -1,8 +1,7 @@
 #ifndef __FT_CONTAINERS_UTILS__
 #define __FT_CONTAINERS_UTILS__
 
-#include <memory>
-#include <new>
+#include "vector.hpp"
 
 namespace ft {
 	template <class _InputIt1, class _InputIt2>
@@ -47,21 +46,6 @@ namespace ft {
 			_first1++, _first2++;
 		}
 		return (_first1 == _last1) && (_first2 != _last2);
-	}
-
-	template <class _T1, class _T2>
-	inline void _Construct(_T1* _p, const _T2& _value) {
-		new (static_case<void*>(_p))_T1(_value);
-	}
-
-	template <class _T1>
-	inline void _Construct(_T1* _p) {
-		new (static_cast<void*>(_p))_T1();
-	}
-
-	template <class _Tp>
-	inline void _Destroy(_Tp* _pointer) {
-		_pointer->~_Tp();
 	}
 }
 

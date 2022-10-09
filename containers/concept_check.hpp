@@ -222,6 +222,36 @@ namespace ft {
 
     // ====================================================================
 
+    template <class _Tp>
+    struct InputIteratorConcept {
+        _Tp __a;
+
+        void __constraints() { (void)__constraints_(); }
+        void __constraints_() {
+            __function_requires<_DefaultConstructibleConcept<_Tp> >();
+            __function_requires<_AssignableConcept<_Tp> >();
+            __function_requires<_EqualityComparableConcept<_Tp> >();
+            __function_requires<_CopyConstructibleConcept<_Tp> >();
+
+            typedef typename ft::iterator_traits<_Tp>::difference_type      _D;
+            typedef typename ft::iterator_traits<_Tp>::pointer              _P;
+            typedef typename ft::iterator_traits<_Tp>::reference            _R;
+
+            __function_requires<_SignedIntegerConcept<_D> >();
+            __function_requires<_ConvertibleConcept<
+                typename ft::iterator_traits<_Tp>::iterator_category,
+                ft::input_iterator_tag> >();
+
+            ++__a;
+            __a++;
+            (void)*__a;
+            _R __r = *__a;
+            _P __p = &*__a;
+            (void)__r;
+            (void)__p;
+        }
+    }; 
+
     // RandomAccessIteratorConcept for ft::random_access_iterator
     // it's differ from boost_concepts cause random_access_iterator defined far away from libstd...
     // but it would be worked...

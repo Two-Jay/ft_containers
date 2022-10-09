@@ -3,6 +3,8 @@
 
 #include "./iterators.hpp"
 #include "./null_ptr.hpp"
+#include "./utils.hpp"
+#include "./concept_check.hpp"
 #include "./alloc_traits.hpp"
 #include <exception>
 #include <memory>
@@ -193,13 +195,12 @@ namespace ft {
             vector&
             operator= (const vector& __x) {
                 if (this != &__x) {
-                    this->clear();
+                    this->clear_storage();
                     this->set_storage(__x.size());
                     for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
                 }
                 return *this;
-            };
-            
+            };    
             ~vector() {
                 this->clear();
             };
@@ -208,7 +209,6 @@ namespace ft {
             clear(void) {
                 this->clear_storage();
             }
-
 
             void assign(size_type __n, const value_type& __u) {
                 this->clear();
@@ -224,14 +224,14 @@ namespace ft {
 
             void
 			push_back (const value_type& _val) {
-				expand(size() + 1);
-				this->get_allocator().construct(_finish++, _val);
-			}
+                if (this->size() == this->get_capacity()) { this->expand(this->size() + 1); }
+                this->get_allocator().construct(this->_finish++, _val);
+            }
 
 			void
 			pop_back (void) {
-				allocator_type().destroy(const_cast<pointer>(_start + _finish--));
-			}
+				this->get_allocator().destroy(this->_finish--);
+            }
 
             iterator
             insert(iterator __pos, const value_type& __u) {
@@ -260,34 +260,35 @@ namespace ft {
                 while (__n--) {
                     *__pos = __u;
                 }
-                return __pos;
             };
 
             template <class InputIterator>
-            void insert(iterator __pos, InputIterator __first, InputIterator __last) {
+            void insert(iterator __pos, InputIterator __first, InputIterator __last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) {
                 size_t __n = ft::distance(__first, __last);
-                size_type __offset          = this->expand(this->size() + __n);
-                reverse_iterator from       = this->rbegin();
-                reverse_iterator to         = this->rbegin() - __n;
+                size_type new_size = this->size() + __n < this->capacity() ? this->capacity() : (this->size() + __n);
+                vector_type __tmp(false, new_size);
+                iterator __tmp_pos = __tmp.begin();
 
-                __pos += __offset;
-                while (from.base() != __pos) {
-                    *to++ = *from++;
+                while (__tmp_pos != __pos) {
+                    __tmp.push_back(*__tmp_pos++);
                 }
                 while (__first != __last) {
-                    *__pos++ = *__first++;
+                    __tmp.push_back(*__first++);
                 }
-                return __pos;
+                while (__tmp_pos != this->end()) {
+                    __tmp.push_back(*__tmp_pos++);
+                }
+                this->swap(__tmp);
             };
 
             size_type
             size (void) const {
-                return size_type(this->end() - this->begin());
+                return size_type(this->_finish - this->_start);
             }
 
             size_type
             max_size (void) const {
-                return size_type(-1) / sizeof(value_type); 
+                return this->get_allocator().max_size();; 
             }
 
             size_type
@@ -301,8 +302,38 @@ namespace ft {
             }
 
             void
-            resize(size_type __n) {
-                resize(__n, this->value_type);
+            resize(size_type __n, value_type __v = value_type()) {
+            	this->expand (__n);
+				while (this->size() < __n) {
+					this->push_back (__v);
+				}
+				while (__n < this->size()) {
+					this->pop_back ();
+				}
+            }
+
+            void
+            reserve(size_type __n) {
+                this->expand(__n);
+            }
+
+            void
+            swap(vector& _x) {
+                allocator_type      tmp_data_allocator = _x.get_allocator();
+                pointer             tmp_start = const_cast<pointer>(&*_x.begin());
+                pointer             tmp_finish = _x._finish;
+                pointer             tmp_capacity = _x._capacity;;                
+            
+                
+                _x._data_allocator = this->get_allocator();
+                _x._start = const_cast<pointer>(&*this->begin());
+                _x._finish = this->_finish;
+                _x._capacity = this->_capacity;
+
+                this->get_allocator() = tmp_data_allocator;
+                this->_start = tmp_start;
+                this->_finish = tmp_finish;
+                this->_capacity = tmp_capacity;
             }
 
 
@@ -388,12 +419,12 @@ namespace ft {
 
             reference
             back (void) {
-                return *(this->begin() + this->size() - 1);
+                return *(this->end() - 1);
             }
 
             const_reference
             back (void) const {
-                return *(this->begin() + this->size() - 1);
+                return *(this->end() - 1);
             }
 
 
@@ -404,6 +435,50 @@ namespace ft {
             }
 
     };
+
+
+    template <class T, class Alloc>
+    bool
+    operator== (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
+        return ft::lexicographical_compare_equal(__x.begin(), __x.end(), __y.begin(), __y.end());
+    }
+
+    template <class T, class Alloc>
+    bool
+    operator!= (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
+        return !(__x == __y);
+    }
+
+    template <class T, class Alloc>
+    bool
+    operator<  (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
+        return ft::lexicographical_compare_less(__x.begin(), __x.end(), __y.begin(), __y.end());
+    }
+
+    template <class T, class Alloc>
+    bool
+    operator<= (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
+        return !(__y > __x);
+    }
+
+    template <class T, class Alloc>
+    bool
+    operator>  (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
+        return __y < __x;
+    }
+
+    template <class T, class Alloc>
+    bool
+    operator>= (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
+        return !(__x < __y);
+    }
+
+    template <class T, class Alloc>
+    void
+    swap (const vector<T, Alloc>& __x, const vector<T, Alloc>& __y) {
+        __x.swap(__y);
+    }
+
 } // namespace ft
 
 #endif // __FT_CONTAINERS_VECTOR__
