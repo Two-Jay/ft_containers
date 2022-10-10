@@ -70,6 +70,7 @@
         "queue": "cpp",
         "set": "cpp",
         "memory_resource": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "__functional_03": "cpp"
     }
 }
