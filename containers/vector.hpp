@@ -75,7 +75,7 @@ namespace ft {
             void
             clear_storage(void) {
                 if (_start) {
-                    _deallocate(_start, get_capacity() * sizeof(value_type));
+                    _deallocate(_start, this->get_capacity());
                     _start = 0;
                     _finish = 0;
                     _capacity = 0;
@@ -138,6 +138,16 @@ namespace ft {
                 }
             }
 
+            template <bool _isAllowedShrink>
+            void
+            resize_alloc(size_type __n) {
+                if (this->_capacity == 0) {
+                    init_storage_by_param_from_scratch(__n);
+                } if (this->get_capacity() < __n) {
+                    expand(__n);
+                }
+            }
+
             template<>
             void
             resize_alloc<true> (size_type __n) {
@@ -150,18 +160,7 @@ namespace ft {
                 }
             }
 
-            template <bool _isAllowedShrink>
-            void
-            resize_alloc(size_type __n) {
-                if (this->_capacity == 0) {
-                    init_storage_by_param_from_scratch(__n);
-                } if (this->get_capacity() < __n) {
-                    expand(__n);
-                }
-            }
-
         private :
-            // return new capa as size_type by condition...
             size_type
             capacity_expand_condition (size_type __n) {
                 size_type old_capa = this->get_capacity();
@@ -184,12 +183,11 @@ namespace ft {
 
         protected :
             _vector_base(const allocator_type& __a) : _base(__a) {};
-            _vector_base(size_type __n, const allocator_type& __a) : _base(__a) {
-                this->set_storage(__n);
-            };
+            _vector_base(size_type __n, const allocator_type& __a) : _base(__a) {    
+                if (!this->_start) this->set_storage(__n, __a);
+            }
 
             ~_vector_base() {
-                this->clear_storage();
             };
         
             void    _throw_out_of_range() const {
@@ -229,18 +227,17 @@ namespace ft {
             using _base::get_allocator;
             using _base::set_storage;
             using _base::clear_storage;
-            using _base::size;
             using _base::expand;
 
         public :
 
             // constructors
             explicit vector(const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__a) {
-                this->set_storage(0);
+                if (!this->_start) this->set_storage(0, __a);
             };
             
             vector(size_type __n, const value_type& __value = value_type(), const allocator_type& __a = allocator_type()) : _vector_base<_T, _Alloc>(__n, __a) {
-                this->set_storage(__n);
+                if (!this->_start) this->set_storage(__n, __a);
                 while (__n--) { this->push_back(__value); }
             };
 
@@ -248,16 +245,11 @@ namespace ft {
             vector(InputIterator __first, InputIterator __last, const allocator_type& __a = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) : _vector_base<_T, _Alloc>(__a) {
                 difference_type __n = ft::distance(__first, __last);
 
-                this->set_storage(__n);
+                if (!this->_start) this->set_storage(__n, __a);
                 while (__n--) { this->push_back(*__first++); }
             };
 
-            // Vector(const Vector& __x) : _vector_base<_T, _Alloc>(__x._data_allocator) {
-            //     this->allocate(__x.size());
-            //     for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
-            // };
-
-            vector(const vector& __x) : _vector_base<_T, _Alloc>(__x) { *this = __x; } // which one is better?
+            vector(const vector& __x) : _vector_base<_T, _Alloc>(__x) { *this = __x; }
             
             vector&
             operator= (const vector& __x) {
@@ -268,9 +260,8 @@ namespace ft {
                 }
                 return *this;
             };
-            ~vector() {
-                this->clear();
-            };
+
+            ~vector() {};
 
             void
             clear(void) {
@@ -300,21 +291,83 @@ namespace ft {
 				this->get_allocator().destroy(this->_finish--);
             }
 
+            // first, check the capacity is enough or not.
+            // If not, create another space of 'this->_capacity' is enough.
+            // Then clear current one and copy all the elements from the another one.
+            // Lastly, deallocate the another one.
             iterator
-            insert(iterator __pos, const value_type& __u) {
-            };
-            
-            void
-            insert(iterator __pos, size_type __n, const value_type& __u) {
-            };
+            insert (const_iterator __pos, const_reference __value) {
+                this->expand(this->size() + 1);
+                reverse_iterator __first = this->rbegin();
+                reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
 
-            template <class InputIterator>
-            void insert(iterator __pos, InputIterator __first, InputIterator __last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) {
-            };
+                while (__first != __rpos) {
+                    *__first = *(__first + 1);
+                    ++__first;
+                }
+                *__rpos = __value;
+                return iterator(__rpos);
+            }
+
+            iterator
+            insert (const_iterator __pos, size_type __count, const_reference __value) {
+                this->expand(this->size() + __count);
+                reverse_iterator __first = this->rbegin();
+                reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
+
+                while (__first != __rpos) {
+                    *__first = *(__first + __count);
+                    ++__first;
+                }
+                while (__count--) { *__rpos = __value; ++__rpos; }
+                return iterator(__rpos);
+            }
+
+            template<class _InputIterator>
+            iterator
+            insert (const_iterator __pos, _InputIterator __first, _InputIterator __last) {
+                difference_type dif = ft::distance(__first, __last);
+                this->expand(this->size() + dif);
+                reverse_iterator __rfirst = this->rbegin();
+                reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
+
+                while (__rfirst != __rpos) {
+                    *__rfirst = *(__rfirst + dif);
+                    ++__rfirst;
+                }
+                while (__first != __last) { *__rpos = *__first; ++__rfirst; ++__first; }
+                return iterator(__rpos);
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             size_type
             size (void) const {
-                return size_type(this->_finish - this->_start);
+                return static_cast<size_type>(this->_finish - this->_start);
             }
 
             size_type
@@ -489,7 +542,7 @@ namespace ft {
     template <class T, class Alloc>
     bool
     operator<= (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
-        return !(__y > __x);
+        return !(__x > __y);
     }
 
     template <class T, class Alloc>
