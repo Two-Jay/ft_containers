@@ -494,11 +494,10 @@ namespace ft {
 
     };
 
-
     template <class T, class Alloc>
     bool
     operator== (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
-        return ft::lexicographical_compare_equal(__x.begin(), __x.end(), __y.begin(), __y.end());
+        return __x.size() == __y.size() && ft::equal(__x.begin(), __x.end(), __y.begin());
     }
 
     template <class T, class Alloc>
@@ -510,19 +509,19 @@ namespace ft {
     template <class T, class Alloc>
     bool
     operator<  (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
-        return ft::lexicographical_compare_less(__x.begin(), __x.end(), __y.begin(), __y.end());
-    }
-
-    template <class T, class Alloc>
-    bool
-    operator<= (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
-        return !(__x > __y);
+        return ft::lexicographical_compare(__x.begin(), __x.end(), __y.begin(), __y.end());
     }
 
     template <class T, class Alloc>
     bool
     operator>  (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
-        return __y < __x;
+        return (__y < __x);
+    }
+
+    template <class T, class Alloc>
+    bool
+    operator<= (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
+        return !(__y < __x);
     }
 
     template <class T, class Alloc>
