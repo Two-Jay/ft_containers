@@ -25,10 +25,10 @@ namespace ft
         _Iter _current;
 
     public:
-        reverse_iterator(){};
+        reverse_iterator() : _current(0) {};
 
         explicit
-        reverse_iterator(_Iter __x) : _current(__x){};
+        reverse_iterator(const _Iter& __x) : _current(__x){};
         
         reverse_iterator(const reverse_iterator& __x) : _current(__x.base()){};
 
