@@ -53,7 +53,7 @@ namespace ft {
             }
 
             size_type
-            inline get_assigned_elements_count () const {
+            inline get_size () const {
                 return static_cast<size_type>(_finish - _start);
             }
 
@@ -85,27 +85,19 @@ namespace ft {
                     _capacity = 0;
                 }
             }
-            
-            size_type
-            size() const {
-                return _finish - _start;
-            }
 
             void
             expand(size_type __n) {
                 if (this->get_capacity() < __n) {
                     size_type __newCapa = this->capacity_expand_condition(__n);
-                    size_type i = 0;
                     try {
                         pointer __tmp = this->_allocate(__newCapa);
-                        while (i < this->get_assigned_elements_count()) {
-                            *(__tmp + i) = *(this->_start + i);
-                            i++;
-                        }
+                        size_type __oldSize = this->get_size();
+                        memmove(__tmp, _start, __oldSize * sizeof(_T));
                         this->_deallocate(this->_start, this->get_capacity());
                         this->_start = __tmp;
                         this->_capacity = __tmp + __newCapa;
-                        this->_finish = __tmp + i;
+                        this->_finish = __tmp + __oldSize;
                     } catch (...) {
                         this->_deallocate(this->_start, __newCapa);
                     }
@@ -118,7 +110,7 @@ namespace ft {
                     pointer __tmp = this->_allocate(__n);
                     this->_start = __tmp;
                     this->_capacity = __n;
-                    this->_start = __tmp;
+                    this->_finish = __tmp;
                 } catch (...) {
                     this->_deallocate(this->_start, __n);
                 }
@@ -126,17 +118,13 @@ namespace ft {
 
             void
             shrink(size_type __n) {
-                size_type i = 0;
                 try {
                     pointer __tmp = this->_allocate(__n);
-                    while (i < __n) {
-                        *(__tmp + i) = *(this->_start + i);
-                        i++;
-                    }
+                    memmove(__tmp, _start, sizeof(*__tmp) * __n);
                     this->_deallocate(this->_start, this->get_capacity());
                     this->_start = __tmp;
-                    this->_capacity = __n;
-                    this->_finish = __tmp + i;
+                    this->_capacity = __tmp + __n;
+                    this->_finish = __tmp + __n;
                 } catch (...) {
                     this->_deallocate(this->_start, __n);
                 }
@@ -169,8 +157,8 @@ namespace ft {
             capacity_expand_condition (size_type __n) {
                 size_type old_capa = this->get_capacity();
                 if (old_capa == 0) {
-                    return 1;
-                } else if (__n + this->get_assigned_elements_count() < old_capa) {
+                    return __n;
+                } else if (__n + this->get_size() < old_capa) {
                     return old_capa;
                 } else {
                     return old_capa * 2;
@@ -227,6 +215,7 @@ namespace ft {
             using _base::_start;
             using _base::_finish;
             using _base::get_capacity;
+            using _base::get_size;
             using _base::get_allocator;
             using _base::set_storage;
             using _base::clear_storage;
@@ -257,9 +246,10 @@ namespace ft {
             vector&
             operator= (const vector& __x) {
                 if (this != &__x) {
-                    this->clear_storage();
-                    this->set_storage(__x.size());
-                    for (size_type __i = 0; __i < __x.size(); __i++) { this->push_back(__x[__i]); }
+                    this->expand(__x.get_size());
+                    memmove(this->_start, __x._start, (size_t)__x.get_size() * sizeof(value_type));
+                    this->_finish = this->_start + __x.get_size();
+                    this->_capacity = __x._capacity;
                 }
                 return *this;
             };
@@ -285,7 +275,7 @@ namespace ft {
 
             void
 			push_back (const value_type& _val) {
-                if (this->size() == this->get_capacity()) { this->expand(this->size() + 1); }
+                this->expand(this->size() + 1);
                 this->get_allocator().construct(this->_finish++, _val);
             }
 
@@ -341,7 +331,7 @@ namespace ft {
 
             size_type
             size (void) const {
-                return static_cast<size_type>(this->_finish - this->_start);
+                return this->get_size();
             }
 
             size_type
@@ -356,7 +346,7 @@ namespace ft {
 
             bool
             empty (void) const {
-                return (begin() == end());
+                return (!this->size());
             }
 
             void
@@ -444,24 +434,24 @@ namespace ft {
 
             reference
             operator[] (size_type __n) {
-                return *(this->begin() + __n);
+                return *(this->_start + __n);
             }
 
             const_reference
             operator[] (size_type __n) const {
-                return *(this->begin() + __n);
+                return *(this->_start + __n);
             }
 
             reference
             at (size_type __n) {
                 _range_check(__n);
-                return (*this)[__n];
+                return *(this->_start + __n);
             }
 
             const_reference
             at (size_type __n) const {
                 _range_check(__n);
-                return (*this)[__n];
+                return *(this->_start + __n);
             }
 
             reference
