@@ -241,7 +241,7 @@ namespace ft {
                 while (__n--) { this->push_back(*__first++); }
             };
 
-            vector(const vector& __x) : _vector_base<_T, _Alloc>(__x) { *this = __x; }
+            vector(const vector& __x) : _vector_base<_T, _Alloc>(__x.get_allocator()) { *this = __x; }
             
             vector&
             operator= (const vector& __x) {
