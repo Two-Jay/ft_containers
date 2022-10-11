@@ -61,10 +61,13 @@ namespace ft {
             size_type
             set_storage(size_type __n, const allocator_type& __Alloc = allocator_type()) {
                 try {
-                    _data_allocator = __Alloc;
-                    _start      = __n ? this->_allocate(__n) : 0;
-                    _finish     = __n ? _start : 0;
-                    _capacity   = __n ? _start + __n : 0;
+                    if (_start) this->expand(__n);
+                    else {
+                        _data_allocator = __Alloc;
+                        _start      = __n ? this->_allocate(__n) : 0;
+                        _finish     = __n ? _start : 0;
+                        _capacity   = __n ? _start + __n : 0;
+                    }
                 }
                 catch (...) {
                     exit(ERROR_ALLOCATE_MEMORY);
@@ -291,10 +294,6 @@ namespace ft {
 				this->get_allocator().destroy(this->_finish--);
             }
 
-            // first, check the capacity is enough or not.
-            // If not, create another space of 'this->_capacity' is enough.
-            // Then clear current one and copy all the elements from the another one.
-            // Lastly, deallocate the another one.
             iterator
             insert (const_iterator __pos, const_reference __value) {
                 this->expand(this->size() + 1);
@@ -309,61 +308,36 @@ namespace ft {
                 return iterator(__rpos);
             }
 
-            iterator
-            insert (const_iterator __pos, size_type __count, const_reference __value) {
-                this->expand(this->size() + __count);
-                reverse_iterator __first = this->rbegin();
-                reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
+            // should recode this methods
+            // iterator
+            // insert (const_iterator __pos, size_type __count, const_reference __value) {
+            //     this->expand(this->size() + __count);
+            //     reverse_iterator __first = this->rbegin();
+            //     reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
 
-                while (__first != __rpos) {
-                    *__first = *(__first + __count);
-                    ++__first;
-                }
-                while (__count--) { *__rpos = __value; ++__rpos; }
-                return iterator(__rpos);
-            }
+            //     while (__first != __rpos) {
+            //         *__first = *(__first + __count);
+            //         ++__first;
+            //     }
+            //     while (__count--) { *__rpos = __value; ++__rpos; }
+            //     return iterator(__rpos);
+            // }
 
-            template<class _InputIterator>
-            iterator
-            insert (const_iterator __pos, _InputIterator __first, _InputIterator __last) {
-                difference_type dif = ft::distance(__first, __last);
-                this->expand(this->size() + dif);
-                reverse_iterator __rfirst = this->rbegin();
-                reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
+            // template<class _InputIterator>
+            // iterator
+            // insert (const_iterator __pos, _InputIterator __first, _InputIterator __last) {
+            //     difference_type dif = ft::distance(__first, __last);
+            //     this->expand(this->size() + dif);
+            //     reverse_iterator __rfirst = this->rbegin();
+            //     reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
 
-                while (__rfirst != __rpos) {
-                    *__rfirst = *(__rfirst + dif);
-                    ++__rfirst;
-                }
-                while (__first != __last) { *__rpos = *__first; ++__rfirst; ++__first; }
-                return iterator(__rpos);
-            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            //     while (__rfirst != __rpos) {
+            //         *__rfirst = *(__rfirst + dif);
+            //         ++__rfirst;
+            //     }
+            //     while (__first != __last) { *__rpos = *__first; ++__rfirst; ++__first; }
+            //     return iterator(__rpos);
+            // }
 
             size_type
             size (void) const {
