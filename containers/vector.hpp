@@ -6,6 +6,7 @@
 #include "./utils.hpp"
 #include "./concept_check.hpp"
 #include "./alloc_traits.hpp"
+#include <iostream>
 #include <exception>
 #include <memory>
 #include <vector>
@@ -206,7 +207,6 @@ namespace ft {
     class vector : public _vector_base<_T, _Alloc> {
         private :
             typedef typename _vector_base<_T, _Alloc>::_base                    _base;
-            typedef vector<_T, _Alloc>                                          vector_type;
 
         public :
             typedef _T                                                          value_type;
@@ -218,8 +218,8 @@ namespace ft {
             typedef const value_type&                                           const_reference;
             typedef value_type*                                                 pointer;
             typedef const_value_type*                                           const_pointer;
-            typedef ft::random_access_iterator<pointer, vector_type>            iterator;
-            typedef ft::random_access_iterator<const_pointer, vector_type>      const_iterator;
+            typedef ft::random_access_iterator<pointer>                         iterator;
+            typedef ft::random_access_iterator<const_pointer>                   const_iterator;
             typedef ft::reverse_iterator<iterator>                              reverse_iterator;
             typedef ft::reverse_iterator<const_iterator>                        const_reverse_iterator;
 
@@ -378,13 +378,12 @@ namespace ft {
             void
             swap(vector& _x) {
                 allocator_type      tmp_data_allocator = _x.get_allocator();
-                pointer             tmp_start = const_cast<pointer>(&*_x.begin());
+                pointer             tmp_start = _x._start;
                 pointer             tmp_finish = _x._finish;
-                pointer             tmp_capacity = _x._capacity;;                
-            
-                
+                pointer             tmp_capacity = _x._capacity;
+
                 _x._data_allocator = this->get_allocator();
-                _x._start = const_cast<pointer>(&*this->begin());
+                _x._start = this->_start;
                 _x._finish = this->_finish;
                 _x._capacity = this->_capacity;
 
@@ -491,7 +490,6 @@ namespace ft {
             _range_check(size_type __n) const {
                 if (__n >= this->size()) this->_throw_out_of_range();
             }
-
     };
 
     template <class T, class Alloc>
@@ -515,7 +513,7 @@ namespace ft {
     template <class T, class Alloc>
     bool
     operator>  (const vector<T,Alloc>& __x, const vector<T,Alloc>& __y) {
-        return (__y < __x);
+        return ft::lexicographical_compare(__y.begin(), __y.end(), __x.begin(), __x.end());
     }
 
     template <class T, class Alloc>
@@ -532,9 +530,10 @@ namespace ft {
 
     template <class T, class Alloc>
     void
-    swap (const vector<T, Alloc>& __x, const vector<T, Alloc>& __y) {
+    swap (vector<T, Alloc>& __x, vector<T, Alloc>& __y) {
         __x.swap(__y);
     }
+
 
 } // namespace ft
 

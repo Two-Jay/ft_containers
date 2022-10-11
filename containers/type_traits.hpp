@@ -136,27 +136,6 @@ namespace ft {
 
     template <class _Tp>
     struct is_nothrow_default_constructible : __false_type {};
-
-    // template <typename _Iter, bool>
-    // struct __iterator_checker_result : __false_type {};
-
-    // template __has_iterator_features {
-    //     private :
-    //         struct __two {char __lx; char __lxx; };
-            
-    //         template <class _Up>
-    //         static __two __test(...);
-            
-    //         template <class _Up>
-    //         static char __test(
-                
-    //         );
-    //     public :
-    //         static const bool value = sizeof(__test<_Iter>()) == 1;
-    // }
-
-    // template <typename _Iter, typename _Container>
-    // struct __is_iterator : __iterator_checker_result<>
 }
 
 #endif // __FT_CONTAINERS__TYPE_TRAIT__

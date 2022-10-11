@@ -2,6 +2,7 @@
 #define __FT_CONTAINERS_ITERATOR_TYPE__
 
 #include "./iterator_base.hpp"
+#include "./concept_check.hpp"
 #include "./type_traits.hpp"
 
 namespace ft
@@ -15,6 +16,7 @@ namespace ft
                               typename ft::iterator_traits<_Iter>::reference>
     {
     public:
+        typedef _Iter                                                   iterator_type;
         typedef typename ft::iterator_traits<_Iter>::difference_type    difference_type;
         typedef typename ft::iterator_traits<_Iter>::value_type         value_type;
         typedef typename ft::iterator_traits<_Iter>::pointer            pointer;
@@ -22,15 +24,16 @@ namespace ft
         typedef typename ft::iterator_traits<_Iter>::iterator_category  iterator_category;
 
     protected:
-        _Iter _current;
+        iterator_type _current;
 
     public:
-        reverse_iterator() : _current(0) {};
+        reverse_iterator() : _current(iterator_type()) {};
 
         explicit
-        reverse_iterator(const _Iter& __x) : _current(__x){};
-        
-        reverse_iterator(const reverse_iterator& __x) : _current(__x.base()){};
+        reverse_iterator(iterator_type _x) : _current(_x){};
+    
+        template<typename _U>
+        reverse_iterator(const reverse_iterator<_U>& _it) : _current(_it.base()) {}
 
         template <class _it>
         reverse_iterator&
@@ -39,14 +42,14 @@ namespace ft
             return *this;
         };
         
-        _Iter
+        iterator_type
         base () const {
             return _current;
         };
 
         reference
         operator* () const { 
-            _Iter __tmp = _current;
+            iterator_type __tmp = _current;
             return *--__tmp;
         };
 
@@ -63,9 +66,9 @@ namespace ft
 
         reverse_iterator
         operator++ (int) {
-            reverse_iterator tmp(*this);
+            reverse_iterator __tmp(*this);
             --_current;
-            return tmp;
+            return __tmp;
         };
 
         reverse_iterator&
@@ -76,9 +79,9 @@ namespace ft
 
         reverse_iterator
         operator-- (int) {
-            reverse_iterator tmp(*this);
+            reverse_iterator __tmp(*this);
             ++_current;
-            return tmp;
+            return __tmp;
         };
 
         reverse_iterator
@@ -110,56 +113,64 @@ namespace ft
     };
 
     template <class _Iter>
-    inline bool operator==(const reverse_iterator<_Iter> &__x, const reverse_iterator<_Iter> &__y)
+    inline bool operator==(const reverse_iterator<_Iter> &__x,
+        const reverse_iterator<_Iter> &__y)
     {
         return __x.base() == __y.base();
     }
 
     template <class _Iter>
-    inline bool operator!=(const reverse_iterator<_Iter> &__x, const reverse_iterator<_Iter> &__y)
+    inline bool operator!=(const reverse_iterator<_Iter> &__x,
+        const reverse_iterator<_Iter> &__y)
     {
-        return !(__x.base() == __y.base());
+        return !(__x == __y);
     }
 
     template <class _Iter>
-    inline bool operator<(const reverse_iterator<_Iter> &__x, const reverse_iterator<_Iter> &__y)
+    inline bool operator<(const reverse_iterator<_Iter> &__x,
+        const reverse_iterator<_Iter> &__y)
     {
-        return __y.base() < __x.base();
+        return __x.base() < __y.base();
     }
 
     template <class _Iter>
-    inline bool operator>(const reverse_iterator<_Iter> &__x, const reverse_iterator<_Iter> &__y)
+    inline bool operator>(const reverse_iterator<_Iter> &__x,
+        const reverse_iterator<_Iter> &__y)
     {
         return __y < __x;
     }
 
     template <class _Iter>
-    inline bool operator<=(const reverse_iterator<_Iter> &__x, const reverse_iterator<_Iter> &__y)
+    inline bool operator<=(const reverse_iterator<_Iter> &__x,
+        const reverse_iterator<_Iter> &__y)
     {
         return !(__y < __x);
     }
 
     template <class _Iter>
-    inline bool operator>=(const reverse_iterator<_Iter> &__x, const reverse_iterator<_Iter> &__y)
+    inline bool operator>=(const reverse_iterator<_Iter> &__x,
+        const reverse_iterator<_Iter> &__y)
     {
         return !(__x < __y);
     }
 
     template <class _Iter1, class _Iter2>
     inline typename ft::iterator_traits<_Iter1>::difference_type
-    operator-(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
+    operator-(const reverse_iterator<_Iter1> &__x,
+        const reverse_iterator<_Iter2> &__y)
     {
         return __y.base() - __x.base();
     }
 
     template <class _Iter>
     inline reverse_iterator<_Iter>
-    operator+(typename ft::iterator_traits<_Iter>::difference_type __n, const reverse_iterator<_Iter> &__x)
+    operator+(typename ft::iterator_traits<_Iter>::difference_type __n,
+        const reverse_iterator<_Iter> &__x)
     {
         return reverse_iterator<_Iter>(__x.base() - __n);
     }
 
-    template <class _Iter, class _Container>
+    template <class _Iter>
     class random_access_iterator
         : public ft::iterator<typename ft::iterator_traits<_Iter>::iterator_category,
                               typename ft::iterator_traits<_Iter>::value_type,
@@ -171,23 +182,25 @@ namespace ft
         _Iter _current;
 
     public:
-        typedef _Container                                              container_type;
+        typedef _Iter                                                   iterator_type;
         typedef typename ft::iterator_traits<_Iter>::difference_type    difference_type;
+        typedef typename ft::iterator_traits<_Iter>::value_type         value_type;
         typedef typename ft::iterator_traits<_Iter>::reference          reference;
         typedef typename ft::iterator_traits<_Iter>::pointer            pointer;
 
         random_access_iterator() : _current(_Iter()){};
 
         explicit
-        random_access_iterator(const _Iter& __i) : _current(__i){};
+        random_access_iterator(iterator_type __i) : _current(__i){};
 
-        template <typename _It>
-        inline random_access_iterator(const random_access_iterator<_It, _Container>& __i)
+        template <typename _U>
+        inline random_access_iterator(const random_access_iterator<_U>& __i,
+            typename ft::enable_if<!ft::is_integral<_U>::value>::type* = 0)
             : _current(__i.base()){};
 
         template <typename _U>
         random_access_iterator&
-        operator=(const ft::random_access_iterator<_U, _Container> &_it) {
+        operator=(const ft::random_access_iterator<_U> &_it) {
             _current = _it.base();
             return *this;
         };
@@ -210,9 +223,7 @@ namespace ft
 
         random_access_iterator
         operator++(int) {
-            random_access_iterator tmp(*this);
-            ++_current;
-            return tmp;
+            return random_access_iterator(_current++);
         };
 
         random_access_iterator&
@@ -223,9 +234,7 @@ namespace ft
 
         random_access_iterator
         operator--(int) {
-            random_access_iterator tmp(*this);
-            --_current;
-            return tmp;
+            return random_access_iterator(_current--);
         };
 
         random_access_iterator&
@@ -247,12 +256,7 @@ namespace ft
 
         random_access_iterator
         operator-(const difference_type &__n) const {
-            return random_access_iterator(_current + __n);
-        };
-
-        difference_type
-        operator+(const random_access_iterator &__it) {
-            return this->_current + __it.base();
+            return random_access_iterator(_current - __n);
         };
 
         difference_type
@@ -265,60 +269,60 @@ namespace ft
             return _current[__n];
         };
 
-        _Iter
+        const iterator_type&
         base() const {
             return this->_current;
         };
     };
 
-    template <typename _Iter1, typename _Iter2, typename _Container>
-    bool operator==(const ft::random_access_iterator<_Iter1, _Container> &__x,
-                    const ft::random_access_iterator<_Iter2, _Container> &__y)
+    template <typename _Iter1, typename _Iter2>
+    bool operator==(const ft::random_access_iterator<_Iter1> &__x,
+                    const ft::random_access_iterator<_Iter2> &__y)
     {
         return (__x.base() == __y.base());
     }
 
-    template <typename _Iter1, typename _Iter2, typename _Container>
-    bool operator!=(const ft::random_access_iterator<_Iter1, _Container> &__x,
-                    const ft::random_access_iterator<_Iter2, _Container> &__y)
+    template <typename _Iter1, typename _Iter2>
+    bool operator!=(const ft::random_access_iterator<_Iter1> &__x,
+                    const ft::random_access_iterator<_Iter2> &__y)
     {
         return !(__x == __y);
     }
 
-    template <typename _Iter1, typename _Iter2, typename _Container>
-    bool operator<(const ft::random_access_iterator<_Iter1, _Container> &__x,
-                   const ft::random_access_iterator<_Iter2, _Container> &__y)
+    template <typename _Iter1, typename _Iter2>
+    bool operator<(const ft::random_access_iterator<_Iter1> &__x,
+                   const ft::random_access_iterator<_Iter2> &__y)
     {
-        return __x.base() < __y.base();
+        return (__x.base() < __y.base());
     }
 
-    template <typename _Iter1, typename _Iter2, typename _Container>
-    bool operator>(const ft::random_access_iterator<_Iter1, _Container> &__x,
-                   const ft::random_access_iterator<_Iter2, _Container> &__y)
+    template <typename _Iter1, typename _Iter2>
+    bool operator>(const ft::random_access_iterator<_Iter1> &__x,
+                   const ft::random_access_iterator<_Iter2> &__y)
     {
-        return __x.base() > __y.base();
+        return (__y < __x);
     }
 
-    template <typename _Iter1, typename _Iter2, typename _Container>
-    bool operator<=(const ft::random_access_iterator<_Iter1, _Container> &__x,
-                    const ft::random_access_iterator<_Iter2, _Container> &__y)
+    template <typename _Iter1, typename _Iter2>
+    bool operator<=(const ft::random_access_iterator<_Iter1> &__x,
+                    const ft::random_access_iterator<_Iter2> &__y)
     {
-        return !(__x.base() > __y.base());
+        return !(__y < __x);
     }
 
-    template <typename _Iter1, typename _Iter2, typename _Container>
-    bool operator>=(const ft::random_access_iterator<_Iter1, _Container> &__x,
-                    const ft::random_access_iterator<_Iter2, _Container> &__y)
+    template <typename _Iter1, typename _Iter2>
+    bool operator>=(const ft::random_access_iterator<_Iter1> &__x,
+                    const ft::random_access_iterator<_Iter2> &__y)
     {
-        return !(__x.base() < __y.base());
+        return !(__x < __y);
     }
 
-    template <typename _Iter, typename _Container>
-    random_access_iterator<_Iter, _Container>
-    operator+(typename random_access_iterator<_Iter, _Container>::difference_type __n,
-              const random_access_iterator<_Iter, _Container> &__it)
+    template <typename _Iter>
+    random_access_iterator<_Iter>
+    operator+(typename random_access_iterator<_Iter>::difference_type __n,
+              const random_access_iterator<_Iter> &__it)
     {
-        return random_access_iterator<_Iter, _Container>(__it.base() + __n);
+        return random_access_iterator<_Iter>(__it.base() + __n);
     }
 
 }

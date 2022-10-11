@@ -259,8 +259,8 @@ namespace ft {
     struct RandomAccessIteratorConcept {
         void __constraints() { (void)__constraints_(); };
         void __constraints_() {
-            __function_requires<_DefaultConstructibleConcept<_Tp> >();
-            __function_requires<_AssignableConcept<_Tp> >();
+            __function_requires<_DefaultConstructibleConcept<_Tp> >;
+            __function_requires<_AssignableConcept<_Tp> >;
             __function_requires<_CopyConstructibleConcept<_Tp> >();
             __function_requires<_EqualityComparableConcept<_Tp> >();
             __function_requires<_ComparableConcept<_Tp> >();
