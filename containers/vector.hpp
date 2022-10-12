@@ -305,7 +305,7 @@ namespace ft {
 
             template<class _InputIterator>
             void
-            insert (iterator __pos, _InputIterator __first, _InputIterator __last) {
+            insert (iterator __pos, _InputIterator __first, _InputIterator __last, typename ft::enable_if<!ft::is_integral<_InputIterator>::value>::type* = 0) {
                 difference_type __n = ft::distance(this->begin(), __pos);
                 _insert_aux(__pos, __n, __first, __last);
             }
@@ -499,20 +499,21 @@ namespace ft {
             template<class _InputIterator>
             void
             _insert_aux(iterator __pos, size_type __n, _InputIterator __first, _InputIterator __last) {
-                pointer _start_cp = this->_start;
-                this->expand(this->size() + __n);
-                reverse_iterator from = this->rbegin();
-                reverse_iterator to = this->rbegin() - __n;
-                
-                size_type _offset = this->_start - _start_cp;
-                __pos += _offset;
-                for (; from.base() != __pos; to++, from++) {
-                    *to = *from;
+                size_type newSize = (this->size() + __n) < this->capacity() ? this->capacity() : (this->size() + __n);
+                vector newVector(0, newSize);
+                iterator iter = begin();
+
+                while (iter != __pos) {
+                    newVector.push_back(*iter++);
                 }
-                for(; __first != __last; __first++, __pos++) {
-                    *__pos = *__first;
+                while (__first != __last) {
+                    newVector.push_back(*__first++);
                 }
-                this->_finish += __n;
+                while (iter != end()) {
+                    newVector.push_back(*iter++);
+                }
+
+                this->swap(newVector);
             }
     };
 
