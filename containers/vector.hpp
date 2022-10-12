@@ -7,6 +7,7 @@
 #include "./concept_check.hpp"
 #include "./alloc_traits.hpp"
 #include <iostream>
+#include <string.h>
 #include <exception>
 #include <memory>
 #include <vector>
@@ -88,7 +89,7 @@ namespace ft {
 
             void
             expand(size_type __n) {
-                if (this->get_capacity() < __n) {
+                if (this->get_capacity() <= __n) {
                     size_type __newCapa = this->capacity_expand_condition(__n);
                     try {
                         pointer __tmp = this->_allocate(__newCapa);
@@ -161,7 +162,7 @@ namespace ft {
                 } else if (__n + this->get_size() < old_capa) {
                     return old_capa;
                 } else {
-                    return old_capa * 2;
+                    return old_capa * 2 + (old_capa % 2);
                 }
             }    
     };
@@ -274,60 +275,40 @@ namespace ft {
             }
 
             void
-			push_back (const value_type& _val) {
+			push_back (value_type _val) {
                 this->expand(this->size() + 1);
-                this->get_allocator().construct(this->_finish++, _val);
+                _insert_at_last(_val);
             }
 
 			void
 			pop_back (void) {
-				this->get_allocator().destroy(this->_finish--);
+                _remove_at_last();
             }
 
             iterator
-            insert (const_iterator __pos, const_reference __value) {
-                this->expand(this->size() + 1);
-                reverse_iterator __first = this->rbegin();
-                reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
-
-                while (__first != __rpos) {
-                    *__first = *(__first + 1);
-                    ++__first;
+            insert (iterator __pos, const_reference __val) {
+                size_type __n = __pos - this->begin();
+                if (!_is_storage_full() && __pos == this->end()) {
+                    _insert_at_last(__val);
+                } else {
+                    _insert_aux(iterator(__pos), 1, __val);
                 }
-                *__rpos = __value;
-                return iterator(__rpos);
+                return this->begin() + __n;
             }
 
-            // should recode this methods
-            // iterator
-            // insert (const_iterator __pos, size_type __count, const_reference __value) {
-            //     this->expand(this->size() + __count);
-            //     reverse_iterator __first = this->rbegin();
-            //     reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
+            iterator
+            insert (iterator __pos, size_type __count, const_reference __val) {
+                size_type __n = __pos - this->begin();
+                _insert_aux(iterator(__pos), __count, __val);
+                return this->begin() + __n;
+            }
 
-            //     while (__first != __rpos) {
-            //         *__first = *(__first + __count);
-            //         ++__first;
-            //     }
-            //     while (__count--) { *__rpos = __value; ++__rpos; }
-            //     return iterator(__rpos);
-            // }
-
-            // template<class _InputIterator>
-            // iterator
-            // insert (const_iterator __pos, _InputIterator __first, _InputIterator __last) {
-            //     difference_type dif = ft::distance(__first, __last);
-            //     this->expand(this->size() + dif);
-            //     reverse_iterator __rfirst = this->rbegin();
-            //     reverse_iterator __rpos = reverse_iterator(const_iterator(__pos));
-
-            //     while (__rfirst != __rpos) {
-            //         *__rfirst = *(__rfirst + dif);
-            //         ++__rfirst;
-            //     }
-            //     while (__first != __last) { *__rpos = *__first; ++__rfirst; ++__first; }
-            //     return iterator(__rpos);
-            // }
+            template<class _InputIterator>
+            void
+            insert (iterator __pos, _InputIterator __first, _InputIterator __last) {
+                difference_type __n = ft::distance(this->begin(), __pos);
+                _insert_aux(__pos, __n, __first, __last);
+            }
 
             size_type
             size (void) const {
@@ -479,6 +460,59 @@ namespace ft {
             void
             _range_check(size_type __n) const {
                 if (__n >= this->size()) this->_throw_out_of_range();
+            }
+
+            bool
+            _is_storage_full() const {
+                return this->_finish == this->_capacity;
+            }
+
+            void
+            inline _insert_at_last(const_reference __v) {
+                this->expand(this->size() + 1);
+                this->get_allocator().construct(this->_finish++, __v);
+            }
+
+            void
+            inline _remove_at_last() {
+                this->get_allocator().destroy(this->_finish--);
+            }
+
+            void
+            _insert_aux(iterator __pos, size_type __n, const_reference __val) {
+                pointer _start_cp = this->_start;
+                this->expand(this->size() + __n);
+                reverse_iterator from = this->rbegin();
+                reverse_iterator to = this->rbegin() - __n;
+                
+                size_type _offset = this->_start - _start_cp;
+                __pos += _offset;
+                for (; from.base() != __pos; to++, from++) {
+                    *to = *from;
+                }
+                for (size_type i = 0; i < __n; i++) {
+                    *__pos++ = __val;
+                }
+                this->_finish += __n;
+            }
+
+            template<class _InputIterator>
+            void
+            _insert_aux(iterator __pos, size_type __n, _InputIterator __first, _InputIterator __last) {
+                pointer _start_cp = this->_start;
+                this->expand(this->size() + __n);
+                reverse_iterator from = this->rbegin();
+                reverse_iterator to = this->rbegin() - __n;
+                
+                size_type _offset = this->_start - _start_cp;
+                __pos += _offset;
+                for (; from.base() != __pos; to++, from++) {
+                    *to = *from;
+                }
+                for(; __first != __last; __first++, __pos++) {
+                    *__pos = *__first;
+                }
+                this->_finish += __n;
             }
     };
 
