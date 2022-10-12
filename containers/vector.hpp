@@ -310,6 +310,18 @@ namespace ft {
                 _insert_aux(__pos, __n, __first, __last);
             }
 
+            iterator
+            erase (iterator _pos) {
+                difference_type offset = 1;
+                return _erase_aux(_pos, offset);
+            } 
+
+            iterator
+            erase (iterator _first, iterator _last) {
+                difference_type offset = ft::distance(_first, _last);
+                return _erase_aux(_first, offset);
+            } 
+
             size_type
             size (void) const {
                 return this->get_size();
@@ -514,6 +526,31 @@ namespace ft {
                 }
 
                 this->swap(newVector);
+            }
+
+            iterator
+            _erase_aux(iterator __pos, difference_type __offset) {
+                iterator iter = this->begin();
+                iterator backup = __pos;
+
+                while (iter != __pos) {
+                    iter++;
+                }
+                for (; (iter + __offset) != this->end(); iter++) {
+                    swap_iterator_value(iter, iter + __offset);
+                }
+                while (__offset--) {
+                    this->pop_back();
+                }
+                return backup;
+            }
+
+            void
+            swap_iterator_value (iterator _first, iterator _last) {
+                value_type temp = *_first;
+
+                *_first = *_last;
+                *_last = temp;
             }
     };
 
