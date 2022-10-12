@@ -3,6 +3,8 @@
 
 #include "./iterator_base.hpp"
 
+#define __ft_function_requires(...)
+
 namespace ft {
     template <class _Concept>
     inline void __function_requires()
