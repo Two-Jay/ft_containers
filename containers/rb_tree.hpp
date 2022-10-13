@@ -84,44 +84,46 @@ namespace ft {
             };
     };
 
-    // template <class _T, class _Alloc>
-    // class NodeFactory_RB_tree {
-    //     public :
-    //         typedef _T                          value_type;
-    //         typedef _T*                         value_pointer;
-    //         typedef _T&                         value_reference;
-    //         typedef Node_RB_tree<_T>            node_type;
-    //         typedef node_type*                  node_pointer;
-    //         typedef color_Node_RB_tree          color_type;
-    //         typedef _Alloc                      allocator_type;
+    template <class _T, class _Alloc>
+    class NodeFactory_RB_tree {
+        public :
+            typedef _T                          value_type;
+            typedef _T*                         value_pointer;
+            typedef _T&                         value_reference;
+            typedef size_t                      size_type;
+            typedef Node_RB_tree<_T>            node_type;
+            typedef node_type*                  node_pointer;
+            typedef color_Node_RB_tree          color_type;
+            typedef _Alloc                      allocator_type;
 
-    //     private :
-    //         allocator_type                      _allocator;
+        private :
+            allocator_type                      _allocator;
 
-    //         allocator_type
-    //         get_allocator(void) {
-    //             return this->_allocator;
-    //         }
+            explicit NodeFactory_RB_tree(const allocator_type& __a) : _allocator(__a) {};
 
-    //         template<class _U>
-    //         _U*
-    //         allocate_node(_U __u) {
-    //             _U* __nptr = NULL;
-    //             try {
-    //                 __nptr = this->get_allocator.allocate(__u);
-    //             } catch (...) {
-    //                 exit(ERROR_ALLOCATE_MEMORY);
-    //             }
-    //             return __nptr;
-    //         }
+            allocator_type
+            inline get_allocator(void) {
+                return this->_allocator;
+            };
 
-    //         node_pointer
-    //         make_node(value_reference __T) {
-    //             node_pointer __nptr;
-                
+            size_type
+            inline get_maxsize(void) {
+                return this->_allocator.max_size();
+            };
 
-    //         }
-    // };
+            template<class _U>
+            node_pointer
+            make_node(_U __data) {
+                node_pointer __nptr = NULL;
+                try {
+                    __nptr = this->get_allocator.allocate(1);
+                    this->get_allocator.construct(__nptr, __data);                    
+                } catch (std::bad_alloc) {
+                    exit(ERROR_ALLOCATE_MEMORY);
+                }
+                return __nptr;
+            }
+    };
 
     // template <class _T, class _Alloc = std::allocator<_T> >
     // class RB_tree {
