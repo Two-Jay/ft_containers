@@ -87,7 +87,6 @@ namespace ft {
                 __x.c.swap(__y.c);   
             }
     };
-        
-};
+}
 
 #endif // __FT_CONTAINERS_STACK__

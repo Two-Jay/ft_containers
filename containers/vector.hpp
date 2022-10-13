@@ -1,5 +1,5 @@
-#ifndef __FT_CONTAINERS_VECTOR__
-#define __FT_CONTAINERS_VECTOR__
+#ifndef __FT_CONTAINERS__VECTOR__
+#define __FT_CONTAINERS__VECTOR__
 
 #include "./iterators.hpp"
 #include "./null_ptr.hpp"
@@ -15,7 +15,6 @@
 #define ERROR_ALLOCATE_MEMORY 134
 
 namespace ft {
-
     template <typename _T, typename _Alloc>
     class _vector_alloc_base {
         public :
@@ -595,8 +594,6 @@ namespace ft {
     swap (vector<T, Alloc>& __x, vector<T, Alloc>& __y) {
         __x.swap(__y);
     }
-
-
 } // namespace ft
 
 #endif // __FT_CONTAINERS_VECTOR__

@@ -11,8 +11,6 @@ namespace ft {
             typedef _T2                      second_type;
             typedef _T1&                     first_reference;
             typedef _T2&                     second_reference;
-            typedef const first_reference   const_first_reference;
-            typedef const second_reference  const_second_reference;
 
         protected :
             
@@ -22,16 +20,16 @@ namespace ft {
 
         pair() : __first_value(), __second_value() {};
 
-        pair(const_first_reference) : __first_value(const_first_reference) {};
+        pair(first_reference _key) : __first_value(_key) {};
         
-        pair(const_first_reference, const_second_reference) : __first_value(const_first_reference), __second_value(const_second_reference) {};
+        pair(first_reference _key, second_reference _data) : __first_value(_key), __second_value(_data) {};
         
         pair(const pair<_T1, _T2>& other) : __first_value(other.__first_value), __second_value(other.__second_value) {};
 
         pair& operator= (const pair<_T1, _T2>& other) {
             this->__first_value = other.__first_value;
             this->__second_value = other.__second_value;
-            return *this
+            return *this;
         };
     };
 
