@@ -69,7 +69,7 @@ namespace ft {
     };
 
     template <class _Value>
-    class _RBT_node_rotator {
+    class _RBT_rebalancer {
         public :
             typedef _RBT_node<_Value>       node_type;
             typedef _RBT_node<_Value>*      node_pointer;
@@ -181,13 +181,13 @@ namespace ft {
             typedef ft::bidirectional_iterator_tag          iterator_category;
 
 
-            typedef _RBT_node<_Value>*                                      _node_ptr;
+            typedef _RBT_node<_Value>*                                      node_pointer;
             typedef ft::_RBT_iterator<_Value, _Value&, _Value*>             iterator;
             typedef ft::_RBT_iterator<_Value, const _Value&, const _Value*> const_iterator;
             typedef ft::_RBT_iterator<_Value, _Ref, _Ptr>                   iterator_self;
             typedef ft::_RBT_node<_Value>*                                  link_type;
 
-            _node_ptr   _node;
+            node_pointer   _node;
 
         public :
             _RBT_iterator() {};
@@ -223,21 +223,13 @@ namespace ft {
                 return __tmp;
             }
 
-        private :
             void
             _increment() {
                 if (_node->_right_child != NULL) {
                     _node = _node->_right_child;
-                    while (_node->_left_child != NULL)
-                        _node = _node->_left_child;
+                    _node = _minimum_from(_node);
                 } else { // Find ancester 
-                    _node_ptr __y = _node->_parent;
-                    while (_node == __y->_right_child) {
-                        _node = __y;
-                        __y = __y->_parent;
-                    }
-                    if (_node->_right_child != __y)
-                        _node = __y;
+                    _node = _find_ancester(RIGHT);
                 }
             }
 
@@ -246,19 +238,55 @@ namespace ft {
                 if (_node->_color == RED && _node->_parent->_parent == _node)
                     _node = _node->_right_child;
                 else if (_node->_left_child != NULL) {
-                    _node_ptr __y = _node->_left_child;
-                    while (__y->_right_child != NULL)
-                        __y = __y->_right_child;
+                    node_pointer __y = _node->_left_child;
+                    __y = _maximum_from(__y);
                     _node = __y;
                 }
                 else { // Find ancester
-                    _node_ptr __y = _node->_parent;
-                    while (_node == __y->_left_child) {
-                        _node = __y;
-                        __y = __y->_parent;
-                    }
-                    _node = __y;
+                    _node = _find_ancester(LEFT);
                 }
+            }
+
+        private :
+            node_pointer
+            _minimum_from(node_pointer __x) {
+                while (__x->_left_child != NULL)
+                    __x = __x->_left_child;
+                return __x;
+            }
+
+            node_pointer
+            _maximum_from(node_pointer __x) {
+                while (__x->_right_child != NULL)
+                    __x = __x->_right_child;
+                return __x;
+            }
+
+            node_pointer
+            _find_ancester(rotate_direction __dir) {
+                return __dir == LEFT ? _find_ancester_aux_left() : _find_ancester_aux_right();
+            }
+
+            node_pointer
+            _find_ancester_aux_left() {
+                node_pointer __x = this->_node;
+                node_pointer __y = __x->_parent;
+                while (__x == __y->_left_child) {
+                    __x = __y;
+                    __y = __y->_parent;
+                }
+                return __y;
+            }
+
+            node_pointer
+            _find_ancester_aux_right() {
+                node_pointer __x = this->_node;
+                node_pointer __y = __x->_parent;
+                while (__x == __y->_right_child) {
+                    __x = __y;
+                    __y = __y->_parent;
+                }
+                return __x->_right_child != __y ? __y->_parent : __y;
             }
     };
 
