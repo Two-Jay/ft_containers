@@ -74,37 +74,6 @@ namespace ft {
             typedef RBT_node<_Value>       node_type;
             typedef RBT_node<_Value>*      node_pointer;
             
-            // while (!insert_case1(__x, __root) && !insert_case2(__x)) {
-            //     if (__x->_parent == __x->_parent->_parent->_left_child) {
-            //         node_pointer __u = __x->_parent->_parent->_right_child;
-
-            //         if (__u && __u->_color == RED) {
-            //             insert_case3(__x, __u);
-            //         } else {
-            //             if (__x == __x->_parent->_right_child) {
-            //                 __x = __x->_parent;
-            //                 _rotate_left(__x, __root);
-            //             }
-            //             __x->_parent->_color = BLACK;
-            //             __x->grandparent()->_color = RED;
-            //             _rotate_right(__x->grandparent(), __root);
-            //         }
-            //     } else {
-            //         node_pointer __y = __x->_parent->_parent->_left_child;
-                    
-            //         if (__y && __y->_color == RED) {
-            //             insert_case3(__x, __u);
-            //         } else {
-            //             if (__x == __x->_parent->_left_child) {
-            //                 __x = __x->_parent;
-            //                 _rotate_right(__x, __root);
-            //             }
-            //             __x->_parent->_color = BLACK;
-            //             __x->grandparent()->_color = RED;
-            //             _rotate_left(__x->grandparent(), __root);
-            //         }
-            //     }
-            // }
             void
             inline rebalance(node_pointer __x, node_pointer __root) {
                 __x->_color = RED;
