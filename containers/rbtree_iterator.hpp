@@ -16,11 +16,11 @@ namespace ft {
     };
 
     template <class _Value> 
-    class _RBT_node {
+    class RBT_node {
         public :
             typedef color_Node_RB_tree      color_type;
-            typedef _RBT_node<_Value>       node_type;
-            typedef _RBT_node<_Value>*      node_pointer;
+            typedef RBT_node<_Value>       node_type;
+            typedef RBT_node<_Value>*      node_pointer;
             typedef _Value                  value_type;
             typedef _Value*                 pointer;
             typedef _Value&                 reference;
@@ -71,57 +71,104 @@ namespace ft {
     template <class _Value>
     class _RBT_rebalancer {
         public :
-            typedef _RBT_node<_Value>       node_type;
-            typedef _RBT_node<_Value>*      node_pointer;
+            typedef RBT_node<_Value>       node_type;
+            typedef RBT_node<_Value>*      node_pointer;
+            
+            // while (!insert_case1(__x, __root) && !insert_case2(__x)) {
+            //     if (__x->_parent == __x->_parent->_parent->_left_child) {
+            //         node_pointer __u = __x->_parent->_parent->_right_child;
 
+            //         if (__u && __u->_color == RED) {
+            //             insert_case3(__x, __u);
+            //         } else {
+            //             if (__x == __x->_parent->_right_child) {
+            //                 __x = __x->_parent;
+            //                 _rotate_left(__x, __root);
+            //             }
+            //             __x->_parent->_color = BLACK;
+            //             __x->grandparent()->_color = RED;
+            //             _rotate_right(__x->grandparent(), __root);
+            //         }
+            //     } else {
+            //         node_pointer __y = __x->_parent->_parent->_left_child;
+                    
+            //         if (__y && __y->_color == RED) {
+            //             insert_case3(__x, __u);
+            //         } else {
+            //             if (__x == __x->_parent->_left_child) {
+            //                 __x = __x->_parent;
+            //                 _rotate_right(__x, __root);
+            //             }
+            //             __x->_parent->_color = BLACK;
+            //             __x->grandparent()->_color = RED;
+            //             _rotate_left(__x->grandparent(), __root);
+            //         }
+            //     }
+            // }
             void
             inline rebalance(node_pointer __x, node_pointer __root) {
                 __x->_color = RED;
-                while (__x != __root && __x->_parent->_color == RED) {
-                    if (__x->_parent == __x->_parent->_parent->_left_child) {
-                        node_pointer __y = __x->_parent->_parent->_right_child;
-
-                        if (__y && __y->_color == RED) {
-                            __x->_parent->_color = BLACK;
-                            __y->_color = BLACK;
-                            __x->grandparent()->_color = RED;
-                            __x = __x->grandparent();
-                        } else {
-                            if (__x == __x->_parent->_right_child) {
-                                __x = __x->_parent;
-                                rotate<LEFT>(__x, __root);
-                            }
-                            __x->_parent->_color = BLACK;
-                            __x->grandparent()->_color = RED;
-                            rotate<RIGHT>(__x->grandparent(), __root);
-                        }
-                    } else {
-                        node_pointer __y = __x->_parent->_parent->_left_child;
-                        
-                        if (__y && __y->_color == RED) {
-                            __x->_parent->_color = BLACK;
-                            __y->_color = BLACK;
-                            __x->grandparent()->_color = RED;
-                            __x = __x->grandparent();
-                        } else {
-                            if (__x == __x->_parent->_left_child) {
-                                __x = __x->_parent;
-                                rotate<RIGHT>(__x, __root);
-                            }
-                            __x->_parent->_color = BLACK;
-                            __x->grandparent()->_color = RED;
-                            rotate<LEFT>(__x->grandparent(), __root);
-                        }
+                while (!insert_case1(__x, __root) && !insert_case2(__x)) {
+                    node_pointer __u = __x->uncle();
+                    if (__u && __u->_color == RED) {
+                        insert_case3(__x, __u);
                     }
+                    bool isRightChild = __x == __x->_parent->_right_child ? true : false;
+                    insert_case4(__x, isRightChild);
+                    insert_case5(__x, root, isRightChild);
                 }
                 __root->_color = BLACK;
             }
-        
+
         private :
-            // rotate_left
-            template <rotate_direction isRightRotate>
+            
+            bool
+            insert_case1(node_pointer __x, node_pointer __root) {
+                return (__x == __root);
+            }
+
+            bool
+            insert_case2(node_pointer __x) {
+                return (__x->_parent->_color == BLACK);
+            }
+
             void
-            inline _rotate(node_pointer __x, node_pointer __root) {
+            inline insert_case3(node_pointer __x, node_pointer __u) {
+                __x->_parent->_color = BLACK;
+                __u->_color = BLACK;
+                __x->grandparent()->_color = RED;
+                __x = __x->grandparent();
+            }
+
+            void
+            insert_case4(node_pointer __x, bool isXnodeRightChild) {
+                node_pointer __g = __x->grandparent();
+
+                if (isXnodeRightChild && __x->_parent == __g->_left_child) {
+                    _rotate_left(__x->_parent);
+                    __x = __x->_left_child;
+                } else if (!isXnodeRightChild && __x->_parent == __g->_right_child) {
+                    _rotate_right(__x->_parent);
+                    __x = __x->_right_child;
+                }
+            }
+
+            void
+            insert_case5(node_pointer __x, node_pointer __root, bool isXnodeRightChild) {
+                node_pointer __g = __x->grandparent();
+                
+                __x->_parent->_color = BLACK;
+                __g->_color = RED;
+                if (isXnodeRightChild) {
+                    _rotate_left(__g, __root);
+                } else {
+                    _rotate_right(__g, __root);
+                }
+            }
+
+
+            void
+            inline _rotate_left(node_pointer __x, node_pointer __root) {
                 node_pointer __y = __x->_right_child;
                 
                 __x->_right_child = __y->_left_child;
@@ -139,10 +186,8 @@ namespace ft {
                 __x->_parent = __y;
             }
 
-            // rotate_right
-            template <>
             void
-            inline _rotate<RIGHT> (node_pointer __x, node_pointer __root) {
+            inline _rotate_right(node_pointer __x, node_pointer __root) {
                 node_pointer __y = __x->_left_child;
 
                 __x->_left_child = __y->_right_child;
@@ -159,6 +204,7 @@ namespace ft {
                 __y->_right_child = __x;
                 __x->_parent = __y;
             }
+
     };
 
 
@@ -172,11 +218,11 @@ namespace ft {
             typedef ft::bidirectional_iterator_tag          iterator_category;
 
 
-            typedef _RBT_node<_Value>*                                      node_pointer;
+            typedef RBT_node<_Value>*                                      node_pointer;
             typedef ft::_RBT_iterator<_Value, _Value&, _Value*>             iterator;
             typedef ft::_RBT_iterator<_Value, const _Value&, const _Value*> const_iterator;
             typedef ft::_RBT_iterator<_Value, _Ref, _Ptr>                   iterator_self;
-            typedef ft::_RBT_node<_Value>*                                  link_type;
+            typedef ft::RBT_node<_Value>*                                  link_type;
 
             node_pointer   _node;
 
