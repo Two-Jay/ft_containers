@@ -73,23 +73,55 @@ namespace ft {
         public :
             typedef _RBT_node<_Value>       node_type;
             typedef _RBT_node<_Value>*      node_pointer;
-            
-
-            void rotate(node_pointer __x, node_pointer __root, rotate_direction __dir) {
-                switch (__dir) {
-                    case LEFT:
-                        _RB_tree_rotate_left(__x, __root);
-                        break;
-                    case RIGHT:
-                        _RB_tree_rotate_right(__x, __root);
-                        break;
-                    default:
-                        break;
-                }
-            }
 
             void
-            inline _rotate_left(node_pointer __x, node_pointer __root) {
+            inline rebalance(node_pointer __x, node_pointer __root) {
+                __x->_color = RED;
+                while (__x != __root && __x->_parent->_color == RED) {
+                    if (__x->_parent == __x->_parent->_parent->_left_child) {
+                        node_pointer __y = __x->_parent->_parent->_right_child;
+
+                        if (__y && __y->_color == RED) {
+                            __x->_parent->_color = BLACK;
+                            __y->_color = BLACK;
+                            __x->grandparent()->_color = RED;
+                            __x = __x->grandparent();
+                        } else {
+                            if (__x == __x->_parent->_right_child) {
+                                __x = __x->_parent;
+                                rotate<LEFT>(__x, __root);
+                            }
+                            __x->_parent->_color = BLACK;
+                            __x->grandparent()->_color = RED;
+                            rotate<RIGHT>(__x->grandparent(), __root);
+                        }
+                    } else {
+                        node_pointer __y = __x->_parent->_parent->_left_child;
+                        
+                        if (__y && __y->_color == RED) {
+                            __x->_parent->_color = BLACK;
+                            __y->_color = BLACK;
+                            __x->grandparent()->_color = RED;
+                            __x = __x->grandparent();
+                        } else {
+                            if (__x == __x->_parent->_left_child) {
+                                __x = __x->_parent;
+                                rotate<RIGHT>(__x, __root);
+                            }
+                            __x->_parent->_color = BLACK;
+                            __x->grandparent()->_color = RED;
+                            rotate<LEFT>(__x->grandparent(), __root);
+                        }
+                    }
+                }
+                __root->_color = BLACK;
+            }
+        
+        private :
+            // rotate_left
+            template <rotate_direction isRightRotate>
+            void
+            inline _rotate(node_pointer __x, node_pointer __root) {
                 node_pointer __y = __x->_right_child;
                 
                 __x->_right_child = __y->_left_child;
@@ -107,8 +139,10 @@ namespace ft {
                 __x->_parent = __y;
             }
 
+            // rotate_right
+            template <>
             void
-            inline _rotate_right(node_pointer __x, node_pointer __root) {
+            inline _rotate<RIGHT> (node_pointer __x, node_pointer __root) {
                 node_pointer __y = __x->_left_child;
 
                 __x->_left_child = __y->_right_child;
@@ -124,49 +158,6 @@ namespace ft {
                     __x->_parent->_left_child = __y;
                 __y->_right_child = __x;
                 __x->_parent = __y;
-            }
-
-            void
-            inline rebalance(node_pointer __x, node_pointer __root) {
-                __x->_color = RED;
-                while (__x != __root && __x->_parent->_color == RED) {
-                    if (__x->_parent == __x->_parent->_parent->_left_child) {
-                        node_pointer __y = __x->_parent->_parent->_right_child;
-
-                        if (__y && __y->_color == RED) {
-                            __x->_parent->_color = BLACK;
-                            __y->_color = BLACK;
-                            __x->grandparent()->_color = RED;
-                            __x = __x->grandparent();
-                        } else {
-                            if (__x == __x->_parent->_right_child) {
-                                __x = __x->_parent;
-                                rotate(__x, __root, LEFT);
-                            }
-                            __x->_parent->_color = BLACK;
-                            __x->grandparent()->_color = RED;
-                            rotate(__x->grandparent(), __root, RIGHT);
-                        }
-                    } else {
-                        node_pointer __y = __x->_parent->_parent->_left_child;
-                        
-                        if (__y && __y->_color == RED) {
-                            __x->_parent->_color = BLACK;
-                            __y->_color = BLACK;
-                            __x->grandparent()->_color = RED;
-                            __x = __x->grandparent();
-                        } else {
-                            if (__x == __x->_parent->_left_child) {
-                                __x = __x->_parent;
-                                rotate(__x, __root, RIGHT);
-                            }
-                            __x->_parent->_color = BLACK;
-                            __x->grandparent()->_color = RED;
-                            rotate(__x->grandparent(), __root, LEFT);
-                        }
-                    }
-                }
-                __root->_color = BLACK;
             }
     };
 
