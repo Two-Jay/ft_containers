@@ -21,19 +21,19 @@ namespace ft
             typedef _Alloc                              allocator_type;
             typedef value_type&                         reference;
             typedef const value_type&                   const_reference;
-            typedef allocator_type::pointer             pointer;
-            typedef allocator_type::const_pointer       const_pointer;
+            typedef typename allocator_type::pointer             pointer;
+            typedef typename allocator_type::const_pointer       const_pointer;
 
         private :
-            typedef ft::rb_tree<key_type, _value_type, key_compare, allocator_type> _tree_type;
+            typedef ft::RB_tree<key_type, value_type, key_compare, allocator_type> _tree_type;
 
         public :
-            typedef _tree_type::iterator                iterator;
-            typedef _tree_type::const_iterator          const_iterator;
-            typedef _tree_type::reverse_iterator        reverse_iterator;
-            typedef _tree_type::const_reverse_iterator  const_reverse_iterator;
-            typedef _tree_type::size_type               size_type;
-            typedef _tree_type::difference_type         difference_type;
+            typedef typename _tree_type::iterator                iterator;
+            typedef typename _tree_type::const_iterator          const_iterator;
+            typedef typename _tree_type::reverse_iterator        reverse_iterator;
+            typedef typename _tree_type::const_reverse_iterator  const_reverse_iterator;
+            typedef typename _tree_type::size_type               size_type;
+            typedef typename _tree_type::difference_type         difference_type;
 
 
         protected :
@@ -60,13 +60,12 @@ namespace ft
 			};
 
             typedef ft::map<_Key, _T, _Compare, _Alloc>     _self_type;
-            typedef ft::value_compare<_Key, _T, _Compare>   _value_compare;
 
 
-            _tree                       _tree;
+            _tree_type                       _tree;
             allocator_type              _alloc;
-            _key_compare                _key_comp;
-            _value_compare              _value_comp;
+            key_compare                _key_comp;
+            value_compare              _value_comp;
 
 
         public:

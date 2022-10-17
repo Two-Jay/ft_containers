@@ -17,20 +17,20 @@ namespace ft
             typedef _Compare                            key_compare;
             typedef _Compare                            value_compare;
         private :
-            typedef ft::rb_tree<key_type, _value_type, key_compare, allocator_type>     _tree_type;
-            typedef ft::set<key_type, key_compare, allocator_type>                      _self_type;
+            typedef ft::RB_tree<key_type, value_type, key_compare, _Alloc>      _tree_type;
+            typedef ft::set<key_type, key_compare, _Alloc>                      _self_type;
         public :
-            typedef _tree_type::pointer                 pointer;
-            typedef _tree_type::const_pointer           const_pointer;
-            typedef _tree_type::reference               reference;
-            typedef _tree_type::const_reference         const_reference; 
-            typedef _tree_type::iterator                iterator;
-            typedef _tree_type::const_iterator          const_iterator;
-            typedef _tree_type::reverse_iterator        reverse_iterator;
-            typedef _tree_type::const_reverse_iterator  const_reverse_iterator;
-            typedef _tree_type::size_type               size_type;
-            typedef _tree_type::difference_type         difference_type;
-            typedef _tree_type::allocator_type          allocator_type;
+            typedef typename _tree_type::pointer                 pointer;
+            typedef typename _tree_type::const_pointer           const_pointer;
+            typedef typename _tree_type::reference               reference;
+            typedef typename _tree_type::const_reference         const_reference; 
+            typedef typename _tree_type::iterator                iterator;
+            typedef typename _tree_type::const_iterator          const_iterator;
+            typedef typename _tree_type::reverse_iterator        reverse_iterator;
+            typedef typename _tree_type::const_reverse_iterator  const_reverse_iterator;
+            typedef typename _tree_type::size_type               size_type;
+            typedef typename _tree_type::difference_type         difference_type;
+            typedef typename _tree_type::allocator_type          allocator_type;
 
         
         protected :
@@ -216,37 +216,37 @@ namespace ft
 
     template <class _Key, class _Compare, class _Alloc>
     bool
-    operator==(const set<_Key, _Compare, _Alloc>& _x, const set<_Key, _Compare, _Alloc>& _y) {
+    operator==(const set<_Key, _Compare, _Alloc>& __x, const set<_Key, _Compare, _Alloc>& __y) {
         return _SET_OPE_MACRO(==);
     }
 
     template <class _Key, class _Compare, class _Alloc>
     bool
-    operator<(const set<_Key, _Compare, _Alloc>& _x, const set<_Key, _Compare, _Alloc>& _y) {
+    operator<(const set<_Key, _Compare, _Alloc>& __x, const set<_Key, _Compare, _Alloc>& __y) {
         return _SET_OPE_MACRO(<);
     }
 
     template <class _Key, class _Compare, class _Alloc>
     bool
-    operator!=(const set<_Key, _Compare, _Alloc>& _x, const set<_Key, _Compare, _Alloc>& _y) {
+    operator!=(const set<_Key, _Compare, _Alloc>& __x, const set<_Key, _Compare, _Alloc>& __y) {
         return _SET_OPE_MACRO(!=);
     }
 
     template <class _Key, class _Compare, class _Alloc>
     bool
-    operator>(const set<_Key, _Compare, _Alloc>& _x, const set<_Key, _Compare, _Alloc>& _y) {
+    operator>(const set<_Key, _Compare, _Alloc>& __x, const set<_Key, _Compare, _Alloc>& __y) {
         return _SET_OPE_MACRO(>);
     }
 
     template <class _Key, class _Compare, class _Alloc>
     bool
-    operator>=(const set<_Key, _Compare, _Alloc>& _x, const set<_Key, _Compare, _Alloc>& _y) {
+    operator>=(const set<_Key, _Compare, _Alloc>& __x, const set<_Key, _Compare, _Alloc>& __y) {
         return _SET_OPE_MACRO(>=);
     }
 
     template <class _Key, class _Compare, class _Alloc>
     bool
-    operator<=(const set<_Key, _Compare, _Alloc>& _x, const set<_Key, _Compare, _Alloc>& _y) {
+    operator<=(const set<_Key, _Compare, _Alloc>& __x, const set<_Key, _Compare, _Alloc>& __y) {
         return _SET_OPE_MACRO(<=);
     }
 
@@ -254,8 +254,8 @@ namespace ft
 
     template <class _Key, class _Compare, class _Alloc>
     void
-    swap(set<_Key, _Compare, _Alloc>& _x, set<_Key, _Compare, _Alloc>& _y) {
-        _x.swap(_y);
+    swap(set<_Key, _Compare, _Alloc>& __x, set<_Key, _Compare, _Alloc>& __y) {
+        __x.swap(__y);
     }
 }
 
