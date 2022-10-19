@@ -401,108 +401,109 @@ namespace ft
     {
         return random_access_iterator<_Iter>(__it.base() + __n);
     }
-
-
-
-    template <class _Value, class _Ref, class _Ptr>
-    class _RBT_iterator {
+    
+    template <class T1, class T2, class _Iter>
+    class RBT_iterator {
         public :
-            typedef _Value                                  value_type;
-            typedef _Ref                                    reference;
-            typedef _Ptr                                    pointer;
-            typedef std::ptrdiff_t                          difference_type;
-            typedef ft::bidirectional_iterator_tag          iterator_category;
+            typedef _Iter                                                   iterator_type;
+            typedef typename ft::iterator_traits<_Iter>::difference_type    difference_type;
+            typedef typename ft::iterator_traits<_Iter>::value_type         value_type;
+            typedef typename ft::iterator_traits<_Iter>::reference          reference;
+            typedef typename ft::iterator_traits<_Iter>::pointer            pointer;
+            
+        private :
+            typedef ft::RBT_node<T1, T2>                                    node_type;
+            typedef ft::RBT_node<T1, T2>*                                   node_pointer;     
 
-
-            typedef _RBT_node<_Value>*                                      node_pointer;
-            typedef ft::_RBT_iterator<_Value, _Value&, _Value*>             iterator;
-            typedef ft::_RBT_iterator<_Value, const _Value&, const _Value*> const_iterator;
-            typedef ft::_RBT_iterator<_Value, _Ref, _Ptr>                   iterator_self;
-            typedef ft::_RBT_node<_Value>*                                  link_type;
-
-            node_pointer   _node;
+            node_pointer   _nptr;
 
         public :
-            _RBT_iterator() {};
-            _RBT_iterator(link_type __x) : _node(__x) {};
-            _RBT_iterator(const iterator& __x) : _node(__x._node) {};
+            RBT_iterator(node_pointer __p = NULL) : _nptr(__p) {};
+            RBT_iterator(const RBT_iterator& __x) : _nptr(__x.base()) {};
 
-            reference operator*() const { return this->_node->data(); }
-            pointer operator->() const { return &(operator*()); }
+            RBT_iterator& operator=(const RBT_iterator& __x) {
+                this->_nptr = __x.base();
+                return *this;
+            }
 
-            iterator_self&
+            ~RBT_iterator() {};
+
+            node_pointer
+            base() const {
+                return this->_nptr;
+            }
+
+            reference
+            operator*() const {
+                return *(this->_nptr->_value);
+            }
+
+            pointer
+            operator->() const {
+                return this->_nptr->_value;
+            }
+
+            RBT_iterator&
             operator++() {
-                _increment();
+                this->_nptr = next(this->_nptr);
                 return *this;
             }
 
-            iterator_self
+            RBT_iterator
             operator++(int) {
-                iterator_self __tmp = *this;
-                _increment();
+                RBT_iterator __tmp = *this;
+                this->_nptr = next(this->_nptr);
                 return __tmp;
             }
 
-            iterator_self&
+            RBT_iterator&
             operator--() {
-                _decrement();
+                this->_nptr = prev(this->_nptr);
                 return *this;
             }
 
-            iterator_self
+            RBT_iterator
             operator--(int) {
-                iterator_self __tmp = *this;
-                _decrement();
+                RBT_iterator __tmp = *this;
+                this->_nptr = prev(this->_nptr);
                 return __tmp;
-            }
-
-            void
-            _increment() {
-                if (_node->_right_child != NULL) {
-                    _node = _node->_right_child;
-                    _node = _minimum_from(_node);
-                } else { // Find ancester 
-                    _node = _find_ancester(RIGHT);
-                }
-            }
-
-            void
-            _decrement() {
-                if (_node->_color == RED && _node->_parent->_parent == _node)
-                    _node = _node->_right_child;
-                else if (_node->_left_child != NULL) {
-                    node_pointer __y = _node->_left_child;
-                    __y = _maximum_from(__y);
-                    _node = __y;
-                }
-                else { // Find ancester
-                    _node = _find_ancester(LEFT);
-                }
             }
 
         private :
+
+            node_pointer
+            next(node_pointer __nptr) {
+                if (__nptr->_color) return __nptr;
+                if (__nptr->_right->_color != NIL)
+                    return _minimum_from(__nptr->_right);
+                return _find_ancester_left(__nptr);
+            }
+
+            node_pointer
+            prev(node_pointer __nptr) {
+                if (__nptr->_color) return __nptr;
+                if (__nptr->_coloe != NIL && __nptr->_left->_color != NIL)
+                    return _maximum_from(__nptr->_right);
+                return _find_ancester_right(__nptr);
+            }
+            
+
             node_pointer
             _minimum_from(node_pointer __x) {
-                while (__x->_left_child != NULL)
+                while (__x->_left_child->_color != NIL)
                     __x = __x->_left_child;
                 return __x;
             }
 
             node_pointer
             _maximum_from(node_pointer __x) {
-                while (__x->_right_child != NULL)
+                while (__x->_right_child->_color != NIL)
                     __x = __x->_right_child;
                 return __x;
             }
 
             node_pointer
-            _find_ancester(rotate_direction __dir) {
-                return __dir == LEFT ? _find_ancester_aux_left() : _find_ancester_aux_right();
-            }
-
-            node_pointer
-            _find_ancester_aux_left() {
-                node_pointer __x = this->_node;
+            _find_ancester_left(node_pointer __x) {
                 node_pointer __y = __x->_parent;
                 while (__x == __y->_left_child) {
                     __x = __y;
@@ -512,8 +513,7 @@ namespace ft
             }
 
             node_pointer
-            _find_ancester_aux_right() {
-                node_pointer __x = this->_node;
+            _find_ancester_right(node_pointer __x) {
                 node_pointer __y = __x->_parent;
                 while (__x == __y->_right_child) {
                     __x = __y;
@@ -523,51 +523,49 @@ namespace ft
             }
     };
 
-
     #define RBTREEITER_OPE_MACRO(OP) \
-        __x._node OP __y._node;
+        __x.node OP __y.node;
 
     template <class _Value, class _Ref, class _Ptr>
     inline bool
-    operator==(const _RBT_iterator<_Value, _Ref, _Ptr>& __x,
-               const _RBT_iterator<_Value, _Ref, _Ptr>& __y) {
+    operator==(const RBT_iterator<_Value, _Ref, _Ptr>& __x,
+               const RBT_iterator<_Value, _Ref, _Ptr>& __y) {
         return RBTREEITER_OPE_MACRO(==)
     }
 
     template <class _Value, class _Ref, class _Ptr>
     inline bool
-    operator==(const _RBT_iterator<_Value, const _Value&, const _Value*>& __x,
-               const _RBT_iterator<_Value, _Value&, _Value*>& __y) {
+    operator==(const RBT_iterator<_Value, const _Value&, const _Value*>& __x,
+               const RBT_iterator<_Value, _Value&, _Value*>& __y) {
         return RBTREEITER_OPE_MACRO(==)
     }
 
     template <class _Value, class _Ref, class _Ptr>
     inline bool
-    operator==(const _RBT_iterator<_Value, _Value&, _Value*>& __x,
-               const _RBT_iterator<_Value, const _Value&, const _Value*>& __y) {
+    operator==(const RBT_iterator<_Value, _Value&, _Value*>& __x,
+               const RBT_iterator<_Value, const _Value&, const _Value*>& __y) {
         return RBTREEITER_OPE_MACRO(==)
     }
 
     template <class _Value, class _Ref, class _Ptr>
-    inline bool operator!=(const _RBT_iterator<_Value, _Ref, _Ptr>& __x,
-                const _RBT_iterator<_Value, _Ref, _Ptr>& __y) {
+    inline bool operator!=(const RBT_iterator<_Value, _Ref, _Ptr>& __x,
+                const RBT_iterator<_Value, _Ref, _Ptr>& __y) {
         return RBTREEITER_OPE_MACRO(!=)
     }
 
     template <class _Value>
-    inline bool operator!=(const _RBT_iterator<_Value, const _Value&, const _Value*>& __x,
-                const _RBT_iterator<_Value, _Value&, _Value*>& __y) {
+    inline bool operator!=(const RBT_iterator<_Value, const _Value&, const _Value*>& __x,
+                const RBT_iterator<_Value, _Value&, _Value*>& __y) {
         return RBTREEITER_OPE_MACRO(!=)
     }
 
     template <class _Value>
-    inline bool operator!=(const _RBT_iterator<_Value, _Value&, _Value*>& __x,
-                const _RBT_iterator<_Value, const _Value&, const _Value*>& __y) {
+    inline bool operator!=(const RBT_iterator<_Value, _Value&, _Value*>& __x,
+                const RBT_iterator<_Value, const _Value&, const _Value*>& __y) {
         return RBTREEITER_OPE_MACRO(!=)
     }
 
     #undef RBTREEITER_OPE_MACRO
-
 }
 
 #endif // __FT_CONTAINERS_ITERATOR_TYPE__
