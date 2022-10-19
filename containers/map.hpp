@@ -10,6 +10,7 @@ namespace ft
 {
     template <class Key, class T, class _Compare = std::less<Key>,
             class _Alloc = std::allocator<ft::pair<const Key, T> > >
+
     class map {
         public :
             typedef Key                                          key_type;
@@ -23,25 +24,26 @@ namespace ft
             typedef typename allocator_type::const_pointer       const_pointer;
 
         private :
-            typedef ft::RB_tree<key_type, value_type, key_compare, allocator_type> _tree_type;
+            typedef ft::RB_tree<key_type, value_type, key_compare, allocator_type>      _tree_type;
+            typedef ft::RBT_node<key_type, value_type>                                  _node_type;
 
         public :
-            typedef typename _tree_type::iterator                iterator;
-            typedef typename _tree_type::const_iterator          const_iterator;
-            typedef typename _tree_type::reverse_iterator        reverse_iterator;
-            typedef typename _tree_type::const_reverse_iterator  const_reverse_iterator;
-            typedef typename _tree_type::size_type               size_type;
-            typedef typename _tree_type::difference_type         difference_type;
+
+            typedef ft::associate_container_iterator<key_type, T, value_type*>          iterator;
+            typedef ft::associate_container_iterator<key_type, T, const value_type*>    const_iterator;
+            typedef ft::reverse_iterator<iterator>                                      reverse_iterator;
+            typedef ft::reverse_iterator<const_iterator>                                const_reverse_iterator;
+            typedef typename _tree_type::size_type                                      size_type;
+            typedef typename _tree_type::difference_type                                difference_type;
 
 
         protected :
 			class value_compare {
 				protected:
 					key_compare comp;
-					value_compare (key_compare _c): comp(_c) {}
 				public:
-
 					value_compare() {}
+                    value_compare(key_compare _c): comp(_c) {}
 					value_compare(const value_compare& _x): comp(_x.comp) {}
 					~value_compare() {}
 
@@ -57,7 +59,7 @@ namespace ft
 					}
 			};
 
-            typedef ft::map<_Key, _T, _Compare, _Alloc>     _self_type;
+            typedef ft::map<Key, T, _Compare, _Alloc>     _self_type;
 
 
             _tree_type                  _tree;
@@ -79,7 +81,7 @@ namespace ft
                 insert(_first, _last);
             }
 
-            map (const map& other) { *this->other; }
+            map (const map& other) { *this = other; }
 
             ~map() {}
 
@@ -213,7 +215,6 @@ namespace ft
             template<class InputIterator>
             void insert(InputIterator _first, InputIterator _last)
             {
-
                 while (_first != _last)
                 {
                     _tree.insert(value_type(_first->first, _first->second));
@@ -240,9 +241,16 @@ namespace ft
             void
             swap(map& other) {
                 _tree.swap(other._tree);
-                ft::swap(_alloc, other._alloc);
-                ft::swap(_key_comp, other._key_comp);
-            }
+
+                allocator_type tmp_alloc = _alloc;
+                key_compare tmp_comp = _key_comp;
+
+                _alloc = other._alloc;
+                _key_comp = other._key_comp;
+
+                other._alloc = tmp_alloc;
+                other._key_comp = tmp_comp;
+}
 
             //     /*
             //     *   Lookup
@@ -265,12 +273,12 @@ namespace ft
 
             ft::pair<iterator, iterator>
             equal_range(const key_type& _key) {
-                return ft::pair<iterator, iterator>(lower_bound(_key), upper_bound(_key));
+                return ft::pair<iterator, iterator>(this->lower_bound(_key), this->upper_bound(_key));
             }
 
             ft::pair<const_iterator, const_iterator>
             equal_range(const key_type& _key) const {
-                return ft::pair<const_iterator, const_iterator>(lower_bound(_key), upper_bound(_key));
+                return ft::pair<const_iterator, const_iterator>(this->lower_bound(_key), this->upper_bound(_key));
             }
 
             iterator

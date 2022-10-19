@@ -42,6 +42,18 @@ namespace ft {
 		}
 		return (__first2 != __last2);
 	}
+
+	// template <class Key, class T, class Compare, class A>
+	// friend void
+	// swap(ft::map<Key, T, Compare, A>& __m1, ft::map<Key, T, Compare, A>& __m2 ) {
+	// 	__m1.swap(__m2);
+	// }
+
+    // template<class Key, class Compare, class A>
+    // friend void
+	// swap(ft::set<Key, Compare, A>& __s1, ft::set<Key, Compare, A>& __s2) {
+	// 	__s1.swap(__s2);
+	// }
 }
 
 #endif // __FT_CONTAINERS_UTILS__
