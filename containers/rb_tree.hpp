@@ -11,6 +11,158 @@
 
 namespace ft {
 
+    template <class T1, class T2>
+    class _RBT_rebalancer {
+        public :
+            typedef RBT_node<T1, T2>        node_type;
+            typedef RBT_node<T1, T2>*       node_pointer;
+
+            _RBT_rebalancer() {};
+
+            void
+            inline _rotate_left(node_pointer __x, node_pointer __root) {
+                node_pointer __y = __x->_right;
+                
+                __x->_right = __y->_left;
+                if (__y->_left != NULL)
+                    __y->_left->_parent = __x;
+                __y->_parent = __x->_parent;
+                
+                if (__x == __root)
+                    __root = __y;
+                else if (__x == __x->_parent->_left)
+                    __x->_parent->_left = __y;
+                else
+                    __x->_parent->_right = __y;
+                __y->_left = __x;
+                __x->_parent = __y;
+            }
+
+            void
+            inline _rotate_right(node_pointer __x, node_pointer __root) {
+                node_pointer __y = __x->_left;
+
+                __x->_left = __y->_right;
+                if (__y->_right != NULL)
+                    __y->_right->_parent = __x;
+                __y->_parent = __x->_parent;
+
+                if (__x == __root)
+                    __root = __y;
+                else if (__x == __x->_parent->_right)
+                    __x->_parent->_right = __y;
+                else
+                    __x->_parent->_left = __y;
+                __y->_right = __x;
+                __x->_parent = __y;
+            }
+
+            void
+            rebalance_insert(node_pointer __x, node_pointer __root) {
+                __x->_color = RED;
+                while (__x != __root && __x->_parent->_color == RED) {
+                    if (__x->_parent == __x->_parent->_parent->_left) {
+                        node_pointer __y = __x->_parent->_parent->_right;
+
+                        if (__y && __y->is_red_node()) {
+                            __x->_parent->_color = BLACK;
+                            __y->_color = BLACK;
+                            __x->_grandparent()->_color = RED;
+                            __x = __x->_grandparent();
+                        } else {
+                            if (__x == __x->_parent->_right) {
+                                __x = __x->_parent;
+                                _rotate_left(__x, __root);
+                            }
+                            __x->_parent->_color = BLACK;
+                            __x->_grandparent()->_color = RED;
+                            _rotate_right(__x->_grandparent(), __root);
+                        }
+                    } else {
+                        node_pointer __y = __x->_parent->_parent->_left;
+                        
+                        if (__y && __y->_color == RED) {
+                            node_pointer __xg = __x->_grandparent();
+
+                            __x->_parent->_color = BLACK;
+                            __y->_color = BLACK;
+                            __xg->_color = RED;
+                            __x = __x->_grandparent();
+                        } else {
+                            if (__x == __x->_parent->_left) {
+                                __x = __x->_parent;
+                                _rotate_right(__x, __root);
+                            }
+                            __x->_parent->_color = BLACK;
+                            __x->_grandparent()->_color = RED;
+                            _rotate_left(__x->_grandparent(), __root);
+                        }
+                    }
+                }
+                __root->_color = BLACK;
+            }
+
+            void
+            rebalance_erase(node_pointer __x, node_pointer __root)
+            {
+                while (__x != __root && __x->is_black_node()) {
+                    if (__x->is_left()) {
+                        node_pointer __s = __x->_siblings();
+
+                        if (__s->_color == RED) {
+                            __s->change_color(BLACK);
+                            __x->_parent->change_color(RED);
+                            _rotate_left(__x->_parent, __root);
+                            __s = __x->_parent->_right;
+                        }
+                        if (__s->_left->is_black_node() && __s->_right->is_black_node()) {
+                            __s->_color->change_color(RED);
+                            __x = __x->_parent;
+                        } else {
+                            if (__s->_right->is_black_node()) {
+                                __s->_left->change_color(BLACK);
+                                __s->change_color(RED);
+                                _rotate_right(__s, __root);
+                                __s = __x->_parent->_right;
+                            }
+                            __s->change_color(__x->_parent->_color);
+                            __x->_parent->change_color(BLACK);
+                            __s->_right->change_color(BLACK);
+                            _rotate_left(__x->_parent, __root);
+                            __x = __root;
+                        }
+                    } else {
+                        node_pointer __s = __x->_siblings();
+
+                        if (__s->is_red_node()) {
+                            __s->change_color(BLACK);
+                            __x->_parent->change_color(RED);
+                            _rotate_right(__x->_parent, __root);
+                            __s = __x->_parent->_left;
+                        }
+                        if (__s->_left->is_black_node() && __s->_right->is_black_node()) {
+                            __s->change_color(RED);
+                            __x = __x->_parent;
+                        } else {
+                            if (__s->_left->is_black_node()) {
+                                __s->_right->change_color(BLACK);
+                                __s->change_color(RED);
+                                _rotate_left(__s, __root);
+                                __s = __x->_parent->_left;
+                            }
+                            __s->change_color(__x->_parent->_color);
+                            __x->_parent->change_color(BLACK);
+                            __s->_left->change_color(BLACK);
+                            _rotate_right(__x->_parent, __root);
+                            __x = __root;
+                        }
+                    }
+                }
+                if (!__x->is_nil_node())
+                    __x->change_color(BLACK);
+            }
+    };
+
     template <class Key, class Mapped, class _Alloc>
     class _RBT_base {
         public :
@@ -27,9 +179,7 @@ namespace ft {
             allocator_type                      _allocator;
 
         public :
-            _RBT_base() : _allocator() {}
-
-            explicit _RBT_base(const allocator_type& __a) : _allocator(__a) {};
+            _RBT_base(const allocator_type& __a) : _allocator(__a) {};
 
             node_pointer
             create_node(key_type key, mapped_type value) {
@@ -93,8 +243,26 @@ namespace ft {
         public :
 
             RB_tree()
-                : _comp(), _size(0), _root(this->create_node(key_type(), mapped_type())), _nil(NULL), _rebalancer(rebalancer_type())
+                : _comp(key_compare()), _size(0), _root(this->create_node(key_type(), mapped_type())),
+                _nil(NULL), _rebalancer(rebalancer_type())
             {}
+
+            ~RB_tree() {
+                this->clear();
+                this->destroy_node(_nil);
+            }
+
+            RB_tree&
+            operator=(const RB_tree& __x) {
+                if (this != &__x) {
+                    this->clear();
+                    _comp = __x._comp;
+                    _rebalancer = __x._rebalancer;
+                    for (pointer __tmp = __x.begin(); __tmp != __x.end(); __tmp = next(__tmp))
+                        this->insert(*__tmp->_value);
+                }
+                return *this;
+            }
 
             pointer
             begin() {
@@ -115,8 +283,6 @@ namespace ft {
             end() const {
                 return _nil;
             }
-
-
 
             size_type
             size() const {
@@ -382,157 +548,7 @@ namespace ft {
     }
 
 
-    template <class T1, class T2>
-    class _RBT_rebalancer {
-        public :
-            typedef RBT_node<T1, T2>        node_type;
-            typedef RBT_node<T1, T2>*       node_pointer;
 
-            _RBT_rebalancer() {};
-
-            void
-            inline _rotate_left(node_pointer __x, node_pointer __root) {
-                node_pointer __y = __x->_right;
-                
-                __x->_right = __y->_left;
-                if (__y->_left != NULL)
-                    __y->_left->_parent = __x;
-                __y->_parent = __x->_parent;
-                
-                if (__x == __root)
-                    __root = __y;
-                else if (__x == __x->_parent->_left)
-                    __x->_parent->_left = __y;
-                else
-                    __x->_parent->_right = __y;
-                __y->_left = __x;
-                __x->_parent = __y;
-            }
-
-            void
-            inline _rotate_right(node_pointer __x, node_pointer __root) {
-                node_pointer __y = __x->_left;
-
-                __x->_left = __y->_right;
-                if (__y->_right != NULL)
-                    __y->_right->_parent = __x;
-                __y->_parent = __x->_parent;
-
-                if (__x == __root)
-                    __root = __y;
-                else if (__x == __x->_parent->_right)
-                    __x->_parent->_right = __y;
-                else
-                    __x->_parent->_left = __y;
-                __y->_right = __x;
-                __x->_parent = __y;
-            }
-
-            void
-            rebalance_insert(node_pointer __x, node_pointer __root) {
-                __x->_color = RED;
-                while (__x != __root && __x->_parent->_color == RED) {
-                    if (__x->_parent == __x->_parent->_parent->_left) {
-                        node_pointer __y = __x->_parent->_parent->_right;
-
-                        if (__y && __y->is_red_node()) {
-                            __x->_parent->_color = BLACK;
-                            __y->_color = BLACK;
-                            __x->_grandparent()->_color = RED;
-                            __x = __x->_grandparent();
-                        } else {
-                            if (__x == __x->_parent->_right) {
-                                __x = __x->_parent;
-                                _rotate_left(__x, __root);
-                            }
-                            __x->_parent->_color = BLACK;
-                            __x->_grandparent()->_color = RED;
-                            _rotate_right(__x->_grandparent(), __root);
-                        }
-                    } else {
-                        node_pointer __y = __x->_parent->_parent->_left;
-                        
-                        if (__y && __y->_color == RED) {
-                            node_pointer __xg = __x->_grandparent();
-
-                            __x->_parent->_color = BLACK;
-                            __y->_color = BLACK;
-                            __xg->_color = RED;
-                            __x = __x->_grandparent();
-                        } else {
-                            if (__x == __x->_parent->_left) {
-                                __x = __x->_parent;
-                                _rotate_right(__x, __root);
-                            }
-                            __x->_parent->_color = BLACK;
-                            __x->_grandparent()->_color = RED;
-                            _rotate_left(__x->_grandparent(), __root);
-                        }
-                    }
-                }
-                __root->_color = BLACK;
-            }
-
-            void
-            rebalance_erase(node_pointer __x, node_pointer __root)
-            {
-                while (__x != __root && __x->is_black_node()) {
-                    if (__x->is_left()) {
-                        node_pointer __s = __x->_siblings();
-
-                        if (__s->_color == RED) {
-                            __s->change_color(BLACK);
-                            __x->_parent->change_color(RED);
-                            _rotate_left(__x->_parent, __root);
-                            __s = __x->_parent->_right;
-                        }
-                        if (__s->_left->is_black_node() && __s->_right->is_black_node()) {
-                            __s->_color->change_color(RED);
-                            __x = __x->_parent;
-                        } else {
-                            if (__s->_right->is_black_node()) {
-                                __s->_left->change_color(BLACK);
-                                __s->change_color(RED);
-                                _rotate_right(__s, __root);
-                                __s = __x->_parent->_right;
-                            }
-                            __s->change_color(__x->_parent->_color);
-                            __x->_parent->change_color(BLACK);
-                            __s->_right->change_color(BLACK);
-                            _rotate_left(__x->_parent, __root);
-                            __x = __root;
-                        }
-                    } else {
-                        node_pointer __s = __x->_siblings();
-
-                        if (__s->is_red_node()) {
-                            __s->change_color(BLACK);
-                            __x->_parent->change_color(RED);
-                            _rotate_right(__x->_parent, __root);
-                            __s = __x->_parent->_left;
-                        }
-                        if (__s->_left->is_black_node() && __s->_right->is_black_node()) {
-                            __s->change_color(RED);
-                            __x = __x->_parent;
-                        } else {
-                            if (__s->_left->is_black_node()) {
-                                __s->_right->change_color(BLACK);
-                                __s->change_color(RED);
-                                _rotate_left(__s, __root);
-                                __s = __x->_parent->_left;
-                            }
-                            __s->change_color(__x->_parent->_color);
-                            __x->_parent->change_color(BLACK);
-                            __s->_left->change_color(BLACK);
-                            _rotate_right(__x->_parent, __root);
-                            __x = __root;
-                        }
-                    }
-                }
-                if (!__x->is_nil_node())
-                    __x->change_color(BLACK);
-            }
-    };
 }
 
 #endif // __FT_CONTAINERS__RB_TREE__

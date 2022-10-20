@@ -406,25 +406,26 @@ namespace ft
     template <class T1, class T2, class _Iter>
     class associate_container_iterator {
         public :
-            typedef _Iter                                                   iterator_type;
-            typedef ft::bidirectional_iterator_tag                          iterator_category;
-            typedef typename ft::iterator_traits<_Iter>::value_type         value_type;
-            typedef typename ft::iterator_traits<_Iter>::difference_type    difference_type;
-            typedef typename ft::iterator_traits<_Iter>::reference          reference;
-            typedef typename ft::iterator_traits<_Iter>::pointer            pointer;
+            typedef _Iter                                                           iterator_type;
+            typedef ft::bidirectional_iterator_tag                                  iterator_category;
+            typedef typename ft::iterator_traits<iterator_type>::value_type         value_type;
+            typedef typename ft::iterator_traits<iterator_type>::difference_type    difference_type;
+            typedef typename ft::iterator_traits<iterator_type>::reference          reference;
+            typedef typename ft::iterator_traits<iterator_type>::pointer            pointer;
             
         private :
-            typedef ft::RBT_node<T1, T2>*                                   node_pointer;     
+            typedef ft::RBT_node<T1, T2>*                                           node_pointer;     
 
             node_pointer   _nptr;
 
         public :
             associate_container_iterator(node_pointer __p = NULL) : _nptr(__p) {};
-            
+
             template <class _U>
             associate_container_iterator(const associate_container_iterator<T1, T2, _U>& __x) : _nptr(__x.base()) {};
 
-            associate_container_iterator& operator=(const associate_container_iterator& __x) {
+            associate_container_iterator&
+            operator=(const associate_container_iterator& __x) {
                 this->_nptr = __x.base();
                 return *this;
             }
