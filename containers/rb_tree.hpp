@@ -243,9 +243,11 @@ namespace ft {
         public :
 
             RB_tree()
-                : _comp(key_compare()), _size(0), _root(this->create_node(key_type(), mapped_type())),
+                : _comp(key_compare()), _size(0), _root(),
                 _nil(NULL), _rebalancer(rebalancer_type())
-            {}
+            {
+                _root = this->create_node(key_type(), mapped_type());
+            }
 
             ~RB_tree() {
                 this->clear();
