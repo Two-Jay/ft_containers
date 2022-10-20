@@ -179,8 +179,7 @@ namespace ft {
                 if (!this->_start) this->set_storage(__n, __a);
             }
 
-            ~_vector_base() {
-            };
+            virtual ~_vector_base() {};
         
             void    _throw_out_of_range() const {
                 throw std::out_of_range("vector");
@@ -254,7 +253,7 @@ namespace ft {
                 return *this;
             };
 
-            ~vector() {};
+            virtual ~vector() {};
 
             void
             clear(void) {

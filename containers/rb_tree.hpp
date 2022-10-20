@@ -14,8 +14,8 @@ namespace ft {
     template <class T1, class T2>
     class _RBT_rebalancer {
         public :
-            typedef RBT_node<T1, T2>        node_type;
-            typedef RBT_node<T1, T2>*       node_pointer;
+            typedef RBT_node<const T1, T2>   node_type;
+            typedef node_type*               node_pointer;
 
             _RBT_rebalancer() {};
 
@@ -163,36 +163,33 @@ namespace ft {
             }
     };
 
-    template <class Key, class Mapped, class _Alloc>
+    template <class Key, class Mapped, class _Alloc = std::allocator<ft::pair<const Key, Mapped> > >
     class _RBT_base {
+        private :
+            typedef RBT_node<const Key, Mapped>                                     node_type;
+
         public :
-            typedef Key                                                         key_type;
-            typedef Mapped                                                      mapped_type;
-            typedef size_t                                                      size_type;
-            typedef ft::RBT_node<key_type, mapped_type>                         node_type;
-            typedef ft::RBT_node<key_type, mapped_type>*                        node_pointer;
-            typedef RBT_node_type                                               color_type;
-            typedef typename _Alloc::template rebind<node_type>::other          allocator_type;
-            typedef typename allocator_type::value_type                         value_type;
+            typedef Key                                                             key_type;
+            typedef Mapped                                                          mapped_type;
+            typedef node_type*                                                      node_pointer;
+            typedef RBT_node_type                                                   color_type;
+            typedef typename _Alloc::template rebind<node_type>::other              allocator_type;
+            typedef typename allocator_type::value_type                             value_type;
+            typedef typename allocator_type::reference                              reference;
+            typedef typename allocator_type::const_reference                        const_reference;
+            typedef typename allocator_type::pointer                                pointer;
+            typedef typename allocator_type::const_pointer                          const_pointer;
+            typedef typename allocator_type::difference_type                        difference_type;
+            typedef typename allocator_type::size_type                              size_type;
 
         protected :
             allocator_type                      _allocator;
 
         public :
+            _RBT_base() : _allocator(allocator_type()) {};
             _RBT_base(const allocator_type& __a) : _allocator(__a) {};
 
-            node_pointer
-            create_node(key_type key, mapped_type value) {
-                node_pointer __tmp = this->_allocator.allocate(1);
-                try {
-                    this->_allocator.construct(__tmp, value_type(key, value, NULL, NIL));
-                }
-                catch (...) {
-                    this->_allocator.deallocate(__tmp, 1);
-                    exit(ERROR_ALLOCATE_MEMORY);
-                }
-                return __tmp;
-            };
+            virtual ~_RBT_base() {};
 
             node_pointer
             create_node(key_type key, mapped_type value, color_type color) {
@@ -214,24 +211,24 @@ namespace ft {
             }            
     };
     
-    template <class Key, class Mapped, class _Compare, class _Alloc>
+    template <class Key, class Mapped, class _Compare = std::less<int>, class _Alloc = std::allocator<ft::pair<const Key, Mapped> > >
     class RB_tree : public _RBT_base<Key, Mapped, _Alloc> {
         private :
-            typedef RBT_node<Key, Mapped>                                         node_type;
-            typedef _RBT_rebalancer<Key, Mapped>                                  rebalancer_type;
-        
+            typedef _RBT_rebalancer<Key, Mapped>                                    rebalancer_type;
+            typedef _RBT_base<Key, Mapped, _Alloc>                                  _Base;
+
         public :
             typedef Key                                                             key_type;
             typedef Mapped                                                          mapped_type;
             typedef _Compare                                                        key_compare;
-            typedef typename _Alloc::template rebind<node_type>::other              allocator_type;
-            typedef typename allocator_type::value_type                             value_type;
-            typedef typename allocator_type::reference                              reference;
-            typedef typename allocator_type::const_reference                        const_reference;
-            typedef typename allocator_type::pointer                                pointer;
-            typedef typename allocator_type::const_pointer                          const_pointer;
-            typedef typename allocator_type::difference_type                        difference_type;
-            typedef typename allocator_type::size_type                              size_type;
+            typedef typename _Base::allocator_type                                  allocator_type;
+            typedef typename _Base::value_type                                      value_type;
+            typedef typename _Base::reference                                       reference;
+            typedef typename _Base::const_reference                                 const_reference;
+            typedef typename _Base::pointer                                         pointer;
+            typedef typename _Base::const_pointer                                   const_pointer;
+            typedef typename _Base::difference_type                                 difference_type;
+            typedef typename _Base::size_type                                       size_type;
 
         private :
             key_compare                                 _comp;
@@ -242,16 +239,17 @@ namespace ft {
 
         public :
 
-            RB_tree()
-                : _comp(key_compare()), _size(0), _root(),
-                _nil(NULL), _rebalancer(rebalancer_type())
+            RB_tree() : _RBT_base<Key, Mapped, _Alloc>(allocator_type()),
+                _comp(key_compare()), _size(0), _nil(NULL), _rebalancer(rebalancer_type())
             {
-                _root = this->create_node(key_type(), mapped_type());
+                _root = this->create_node(key_type(), mapped_type(), BLACK);
+                _nil = _root;
+                // _root = new RBT_node<Key, Mapped>(key_type(), mapped_type(), NULL, BLACK);
             }
 
-            ~RB_tree() {
-                this->clear();
-                this->destroy_node(_nil);
+            virtual ~RB_tree() {
+                // this->clear();
+                // this->destroy_node(_nil);
             }
 
             RB_tree&
@@ -297,7 +295,7 @@ namespace ft {
             }
 
             void clear() {
-                clear(_root);
+                clear_aux(_root);
             }
 
             ft::pair<pointer, bool>
@@ -438,11 +436,11 @@ namespace ft {
             }
 
             void
-            clear(pointer __x) {
+            clear_aux(pointer __x) {
                 if (__x == NULL || __x == _nil)
                     return ;
-                clear(__x->_left);
-                clear(__x->_right);
+                clear_aux(__x->_left);
+                clear_aux(__x->_right);
                 if (__x == _root) {
                     _root = _nil;
                     _nil->_parent = _nil;

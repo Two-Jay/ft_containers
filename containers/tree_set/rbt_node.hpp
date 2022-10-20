@@ -2,36 +2,37 @@
 #define __FT_CONTAINERS_RBTREE_NODE_TYPE__
 
 #include "pair.hpp"
+#include <cstdio>
 
 namespace ft {
 
-    enum RBT_node_type {
+    enum rbt_node_type {
         RED,
         BLACK,
         NIL
     };
      
     template <class T1, class T2>
-    class RBT_node {
+    class rbt_node {
         public :
             typedef ft::pair<const T1, T2>          value_type;
-            typedef RBT_node<T1, T2>                node_type;
+            typedef ft::rbt_node<T1, T2>                node_type;
 
-            RBT_node_type _color;
-            node_type*    _parent;
-            node_type*    _left;
-            node_type*    _right;
-            value_type*   _value;
+            rbt_node_type   _color;
+            node_type*      _parent;
+            node_type*      _left;
+            node_type*      _right;
+            value_type*     _value;
 
-            RBT_node(T1 key, T2 value, node_type* nil = NULL, RBT_node_type color = BLACK)
+            // rbt_node() : _color(BLACK), _parent(NULL), _left(NULL), _right(NULL), _value(new value_type(T1(), T2())) {};
+
+            rbt_node(T1 key, T2 value, node_type* nil, rbt_node_type color)
                 : _color(color), _parent(nil), _left(nil), _right(nil), _value(new value_type(key, value)) {}
 
-            // RBT_node() : _color(BLACK), _parent(NULL), _left(NULL), _right(NULL), _value(NULL) {}
+            rbt_node(T1 key, T2 value)
+                : _color(BLACK), _parent(NULL), _left(NULL), _right(NULL), _value(new value_type(key, value)) {}
 
-            // RBT_node(const T1& key, T2& value)
-            //     : _color(BLACK), _parent(NULL), _left(NULL), _right(NULL), _value(new value_type(key, value)) {}
-
-            RBT_node(node_type& __x) {
+            rbt_node(node_type& __x) {
                 *this = __x;
             }
 
@@ -47,7 +48,7 @@ namespace ft {
                 return *this;
             }
 
-            ~RBT_node() {
+            ~rbt_node() {
                 if (this->_value)
                     delete this->_value;
                     this->_value = NULL;
@@ -100,7 +101,7 @@ namespace ft {
             }
 
             void
-            inline change_color(RBT_node_type color) {
+            inline change_color(rbt_node_type color) {
                 this->_color = color;
             }
     };
