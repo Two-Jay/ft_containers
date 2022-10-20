@@ -321,7 +321,7 @@ _Rb_tree_rebalance(_Rb_tree_node_base* __x, _Rb_tree_node_base*& __root)
         }
         __x->_M_parent->_M_color = _S_rb_tree_black;
         __x->_M_parent->_M_parent->_M_color = _S_rb_tree_red;
-        _Rb_tree_rotate_left(__x->_M_parent->_M_parent, __root);
+        _Rb_tree_rotate_left(__x->_M_parent->_M_parent, __∆root);
       }
     }
   }
@@ -520,7 +520,6 @@ struct _Rb_tree_base
   _Rb_tree_base(const allocator_type& __a) 
     : _Base(__a) { _M_header = _M_get_node(); }
   ~_Rb_tree_base() { _M_put_node(_M_header); }
-
 };
 
 
