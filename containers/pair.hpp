@@ -1,9 +1,8 @@
-#ifndef __FT_CONTAINERS_COMPRESSED_PAIR__
-#define __FT_CONTAINERS_COMPRESSED_PAIR__
-
-#include <utility>
+#ifndef __FT_CONTAINERS__PAIR__
+#define __FT_CONTAINERS__PAIR__
 
 namespace ft {
+
     template<class _T1, class _T2>
     struct pair {
             typedef _T1                      first_type;
@@ -17,8 +16,7 @@ namespace ft {
 
             pair(const first_type& _a, const second_type& _b) : first(_a), second(_b) {};
 
-            template<class _U1, class _U2>
-            pair(const pair<_U1, _U2>& other) : first(other.first), second(other.second) {};
+            pair(const pair& other) : first(other.first), second(other.second) {};
 
             pair& operator= (const pair& other) {
                 if (this != &other) {
@@ -68,6 +66,6 @@ namespace ft {
     ft::pair<_T1, _T2> make_pair (_T1 first, _T2 second) {
         return ft::pair<_T1, _T2>(first, second);
     }
-}
+} // end namespace ft here
 
-#endif // __FT_CONTAINERS_COMPRESSED_PAIR__
+#endif // __FT_CONTAINERS__PAIR__

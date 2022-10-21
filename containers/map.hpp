@@ -1,44 +1,46 @@
 #ifndef __FT_CONTAINERS__MAP__
 #define __FT_CONTAINERS__MAP__
 
-#include "./rb_tree.hpp"
+#include "./rbt_tree.hpp"
+#include "./iterators.hpp"
+#include "./rbt_node.hpp"
 #include "./pair.hpp"
 #include <memory>
 
 
 namespace ft
 {
-    template <class Key, class T, class _Compare = std::less<Key>,
-            class _Alloc = std::allocator<ft::pair<const Key, T> > >
-
+    template <
+            class Key,
+            class T,
+            class _Compare = std::less<Key>,
+            class _Alloc = std::allocator<ft::pair<const Key, T> >
+    >
     class map {
         public :
-            typedef Key                                          key_type;
-            typedef T                                            mapped_type;
-            typedef ft::pair<const Key, T>                       value_type;
-            typedef _Compare                                     key_compare;
-            typedef _Alloc                                       allocator_type;
-            typedef value_type&                                  reference;
-            typedef const value_type&                            const_reference;
-            typedef typename allocator_type::pointer             pointer;
-            typedef typename allocator_type::const_pointer       const_pointer;
+            typedef Key                                                     key_type;
+            typedef T                                                       mapped_type;
+            typedef ft::pair<const Key, T>                                  value_type;
+            typedef _Compare                                                key_compare;
+            typedef _Alloc                                                  allocator_type;
+            typedef typename allocator_type::reference                      reference;
+            typedef typename allocator_type::const_reference                const_reference;
+            typedef typename allocator_type::pointer                        pointer;
+            typedef typename allocator_type::const_pointer                  const_pointer;
+            typedef typename allocator_type::size_type                      size_type;
+            typedef typename allocator_type::difference_type                difference_type;
+
+            typedef ft::map_iterator<key_type, T, value_type*>              iterator;
+            typedef ft::map_iterator<key_type, T, const value_type*>        const_iterator;
+            typedef ft::reverse_iterator<iterator>                          reverse_iterator;
+            typedef ft::reverse_iterator<const_iterator>                    const_reverse_iterator;
+
 
         private :
-            typedef ft::RB_tree<key_type, value_type, key_compare, allocator_type>      _tree_type;
-            typedef ft::RBT_node<key_type, value_type>                                  _node_type;
-
-        public :
-
-            typedef ft::associate_container_iterator<key_type, T, value_type*>          iterator;
-            typedef ft::associate_container_iterator<key_type, T, const value_type*>    const_iterator;
-            typedef ft::reverse_iterator<iterator>                                      reverse_iterator;
-            typedef ft::reverse_iterator<const_iterator>                                const_reverse_iterator;
-            typedef typename _tree_type::size_type                                      size_type;
-            typedef typename _tree_type::difference_type                                difference_type;
-
+            typedef ft::rbt_tree<key_type, value_type, _Compare, _Alloc>    _tree_type;
 
         protected :
-			class value_compare {
+			class value_compare : public std::binary_function<value_type, value_type, bool> {
 				protected:
 					key_compare comp;
 				public:
@@ -97,7 +99,7 @@ namespace ft
 
             allocator_type
             get_allocator() const {
-                return _alloc;
+                return this->_alloc;
             }
 
 
@@ -107,25 +109,25 @@ namespace ft
 
             mapped_type&
             at (const key_type& _k) {
-                iterator it = find(_k);
-                if (it == end())
-                    _throw_out_of_range();
+                iterator it = this->find(_k);
+                if (it == this->end())
+                    this->_throw_out_of_range();
                 return it->second;
             }
 
             const mapped_type&
             at (const key_type& _k) const {
-                const_iterator it = find(_k);
-                if (it == end())
-                    _throw_out_of_range();
+                const_iterator it = this->find(_k);
+                if (it == this->end())
+                    this->_throw_out_of_range();
                 return it->second;
             }
             
             mapped_type&
             operator[] (const key_type& _k) {
-                iterator it = find(_k);
-                if (it == end())
-                    it = insert(ft::make_pair(_k, mapped_type())).first;
+                iterator it = this->find(_k);
+                if (it == this->end())
+                    it = this->insert(ft::pair<Key, mapped_type>(_k, _tree.find(_k)->data->second));
                 return it->second;
             }
 
@@ -215,11 +217,8 @@ namespace ft
             template<class InputIterator>
             void insert(InputIterator _first, InputIterator _last)
             {
-                while (_first != _last)
-                {
+                for (;_first != _last; _first++)
                     _tree.insert(value_type(_first->first, _first->second));
-                    _first++;
-                }
             }
 
             void
@@ -250,7 +249,7 @@ namespace ft
 
                 other._alloc = tmp_alloc;
                 other._key_comp = tmp_comp;
-}
+            }
 
             //     /*
             //     *   Lookup
@@ -316,6 +315,11 @@ namespace ft
             }
 
         private :
+            void
+            print_tree() {
+                _tree.print();
+            }
+
             void    _throw_out_of_range() const {
                 throw std::out_of_range("map");
             }
@@ -378,6 +382,8 @@ namespace ft
             map<_Key, _T, _Compare, _Alloc>& __y) {
         __x.swap(__y);
     }
+
+
 }
 
 #endif // __FT_CONTAINERS__MAP__

@@ -3,7 +3,7 @@
 
 #include "./iterator_base.hpp"
 #include "./concept_check.hpp"
-#include "./rbtree_node.hpp"
+#include "./rbt_node.hpp"
 #include "./type_traits.hpp"
 
 namespace ft
@@ -404,7 +404,7 @@ namespace ft
 
 
     template <class T1, class T2, class _Iter>
-    class associate_container_iterator {
+    class map_iterator {
         public :
             typedef _Iter                                                           iterator_type;
             typedef ft::bidirectional_iterator_tag                                  iterator_category;
@@ -414,23 +414,24 @@ namespace ft
             typedef typename ft::iterator_traits<iterator_type>::pointer            pointer;
             
         private :
-            typedef ft::RBT_node<T1, T2>*                                           node_pointer;     
-
+            typedef ft::rbt_node<T1, T2>*                                           node_pointer;     
             node_pointer   _nptr;
 
         public :
-            associate_container_iterator(node_pointer __p = NULL) : _nptr(__p) {};
+            map_iterator(node_pointer __p = NULL) : _nptr(__p) {};
 
             template <class _U>
-            associate_container_iterator(const associate_container_iterator<T1, T2, _U>& __x) : _nptr(__x.base()) {};
+            map_iterator(const map_iterator<T1, T2, _U>& __x) : _nptr(__x.base()) {};
 
-            associate_container_iterator&
-            operator=(const associate_container_iterator& __x) {
-                this->_nptr = __x.base();
+            map_iterator&
+            operator=(const map_iterator& __x) {
+                if (this != &__x) {
+                    this->_nptr = __x.base();
+                }
                 return *this;
             }
 
-            ~associate_container_iterator() {};
+            ~map_iterator() {};
 
             node_pointer
             base() const {
@@ -447,39 +448,39 @@ namespace ft
                 return this->_nptr->_value;
             }
 
-            associate_container_iterator&
+            map_iterator&
             operator++() {
                 this->_nptr = next(this->_nptr);
                 return *this;
             }
 
-            associate_container_iterator
+            map_iterator
             operator++(int) {
-                associate_container_iterator __tmp = *this;
+                map_iterator __tmp(*this);
                 this->_nptr = next(this->_nptr);
                 return __tmp;
             }
 
-            associate_container_iterator&
+            map_iterator&
             operator--() {
                 this->_nptr = prev(this->_nptr);
                 return *this;
             }
 
-            associate_container_iterator
+            map_iterator
             operator--(int) {
-                associate_container_iterator __tmp = *this;
+                map_iterator __tmp(*this);
                 this->_nptr = prev(this->_nptr);
                 return __tmp;
             }
 
             bool
-            operator==(const associate_container_iterator& __x) const {
+            operator==(const map_iterator& __x) const {
                 return this->_nptr == __x.base();
             }
 
             bool
-            operator!=(const associate_container_iterator& __x) const {
+            operator!=(const map_iterator& __x) const {
                 return this->_nptr != __x.base();
             }
 
@@ -496,7 +497,7 @@ namespace ft
             node_pointer
             prev(node_pointer __nptr) {
                 if (__nptr->_color) return __nptr;
-                if (!__nptr->is_nil_node() && !__nptr->_left->is_nil_node())
+                if (__nptr->_color != NIL && __nptr->_left->_color != NIL)
                     return _maximum_from(__nptr->_right);
                 return _find_ancester_right(__nptr);
             }
@@ -504,14 +505,14 @@ namespace ft
 
             node_pointer
             _minimum_from(node_pointer __x) {
-                while (!__x->_left->is_nil_node())
+                while (__x->_left->_color != NIL)
                     __x = __x->_left;
                 return __x;
             }
 
             node_pointer
             _maximum_from(node_pointer __x) {
-                while (!__x->_right->is_nil_node())
+                while (__x->_right->_color != NIL)
                     __x = __x->_right;
                 return __x;
             }
@@ -536,6 +537,7 @@ namespace ft
                 return __x->_right != __y ? __y->_parent : __y;
             }
     };
+
 }
 
 #endif // __FT_CONTAINERS_ITERATOR_TYPE__
