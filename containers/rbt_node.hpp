@@ -27,12 +27,12 @@ namespace ft {
             rbt_node(T1 key, T2 value, rbt_node* nil = NULL, rbt_node_type color = BLACK)
                 : _color(color), _parent(nil), _left(nil), _right(nil), _value(new value_type(key, value)) {}
 
-            rbt_node(rbt_node& __x) {
+            rbt_node(const rbt_node& __x) {
                 *this = __x;
             }
 
             rbt_node&
-            operator=(rbt_node& __x) {
+            operator=(const rbt_node& __x) {
                 if (this != &__x) {
                     this->_color = __x._color;
                     this->_parent = __x._parent;
