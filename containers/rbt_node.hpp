@@ -16,7 +16,7 @@ namespace ft {
     template <class T1, class T2>
     class rbt_node {
         public :
-            typedef ft::pair<T1, T2> value_type;
+            typedef ft::pair<const T1, T2> value_type;
 
             rbt_node_type   _color;
             rbt_node*       _parent;
