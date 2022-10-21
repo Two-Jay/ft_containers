@@ -27,11 +27,16 @@ namespace ft {
                 return *this;
             };
 
-            void
-            swap(pair& other) {
-                std::swap(this->first, other.first);
-                std::swap(this->second, other.second);
-            };
+
+            void swap(pair& __p)
+            {
+                first_type __tmp = __p.first;
+                second_type __tmp2 = __p.second;
+                __p.first = first;
+                __p.second = second;
+                first = __tmp;
+                second = __tmp2;
+            }
     };
 
     template <class _T1, class _T2>
