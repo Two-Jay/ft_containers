@@ -2,7 +2,8 @@
 #define __FT_CONTAINERS__MAP_ITERATOR__
 
 #include "rbt_node.hpp"
-#include "iterators.hpp"
+#include "iterator_base.hpp"
+
 
 namespace ft {
     template <class T1, class T2, class _Iter>
@@ -90,18 +91,18 @@ namespace ft {
 
             node_pointer
             next(node_pointer __nptr) {
-                if (__nptr->_color) return __nptr;
+                if (__nptr->_color == NIL) return __nptr;
                 if (__nptr->_right->_color != NIL)
                     return _minimum_from(__nptr->_right);
-                return _find_ancester_left(__nptr);
+                return _find_ancester_right(__nptr);
             }
 
             node_pointer
             prev(node_pointer __nptr) {
-                if (__nptr->_color) return __nptr;
+                if (__nptr->_color == NIL) return __nptr->_parent;
                 if (__nptr->_color != NIL && __nptr->_left->_color != NIL)
-                    return _maximum_from(__nptr->_right);
-                return _find_ancester_right(__nptr);
+                    return _maximum_from(__nptr->_left);
+                return _find_ancester_left(__nptr);
             }
             
 
@@ -120,9 +121,9 @@ namespace ft {
             }
 
             node_pointer
-            _find_ancester_left(node_pointer __x) {
+            _find_ancester_right(node_pointer __x) {
                 node_pointer __y = __x->_parent;
-                while (__x == __y->_left) {
+                while (__y->_color != NIL && __x == __y->_right) {
                     __x = __y;
                     __y = __y->_parent;
                 }
@@ -130,13 +131,13 @@ namespace ft {
             }
 
             node_pointer
-            _find_ancester_right(node_pointer __x) {
+            _find_ancester_left(node_pointer __x) {
                 node_pointer __y = __x->_parent;
-                while (__x == __y->_right) {
+                while (__y->_color != NIL && __x == __y->_left) {
                     __x = __y;
                     __y = __y->_parent;
                 }
-                return __x->_right != __y ? __y->_parent : __y;
+                return __y->_color != NIL ? __y : __x;
             }
     };
 }

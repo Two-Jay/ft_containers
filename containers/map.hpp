@@ -231,9 +231,8 @@ namespace ft
 
             void
             erase(iterator _first, iterator _last) {
-                key_type key;
                 for (; _first != _last; _first++) {
-                    key = _first->first;
+                    key_type key = _first->first;
                     _tree.erase(key);
                 }
             }
@@ -258,7 +257,7 @@ namespace ft
 
             size_type
             count(const key_type& _key) const {
-                return _tree.count(_key) != _tree.end() ? 1 : 0;
+                return _tree.find(_key) != _tree.end() ? 1 : 0;
             }
 
             iterator

@@ -257,10 +257,10 @@ namespace ft
         {
             while (__x != _root && __x->_parent->_color == RED)
             {
+                pointer __y = __x->_uncle();
+
                 if (__x->_parent->is_left())
                 {
-                    pointer __y = __x->_uncle();
-
                     if (is_red_node(__y))
                     {
                         __x->_parent->change_color(BLACK);
@@ -282,8 +282,6 @@ namespace ft
                 }
                 else
                 {
-                    pointer __y = __x->_uncle();
-
                     if (__y && __y->_color == RED)
                     {
                         pointer __xg = __x->_grandparent();
@@ -295,7 +293,7 @@ namespace ft
                     }
                     else
                     {
-                        if (__x == __x->_parent->_left)
+                        if (__x->is_left())
                         {
                             __x = __x->_parent;
                             _rotate_right(__x);
@@ -411,11 +409,13 @@ namespace ft
         pointer
         search(pointer __cur, const key_type &__k) const
         {
-            while (__cur != _nil)
-            {
+            if (!is_nil_node(__cur)) {
                 if (__k == __cur->_value->first)
                     return __cur;
-                __cur = _comp(__k, __cur->_value->first) ? __cur->_left : __cur->_right;
+                else if (_comp(__k, __cur->_value->first))
+                    return search(__cur->_left, __k);
+                else
+                    return search(__cur->_right, __k);
             }
             return _nil;
         }
@@ -437,7 +437,7 @@ namespace ft
         }
 
         pointer
-        next(pointer __x) const
+        next(pointer __x)
         {
             if (is_nil_node(__x))
                 return __x;
@@ -454,7 +454,7 @@ namespace ft
         }
 
         pointer
-        prev(pointer __x) const
+        prev(pointer __x)
         {
             if (__x->_color == NIL)
                 return __x->_parent;
@@ -503,14 +503,13 @@ namespace ft
                         __y = __y->_left;
                 }
 
-                __x = is_nil_node(__y->_left) ? __y->_right : __y->_left;
+                __x = !is_nil_node(__y->_left) ? __y->_left : __y->_right;
 
-                if (is_nil_node(__x))
+                if (!is_nil_node(__x))
                     __x->_parent = __y->_parent;
                 if (is_nil_node(__y->_parent))
                     _root = __x;
-                else
-                {
+                else {
                     if (__y->is_left())
                         __y->_parent->_left = __x;
                     else
@@ -584,7 +583,7 @@ namespace ft
 
         bool inline is_nil_node(pointer __p) const
         {
-            return __p && __p->_color == NIL ? true : false;
+            return __p && (__p == _nil || __p->_color == NIL) ? true : false;
         }
     };
 

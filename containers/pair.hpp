@@ -51,17 +51,17 @@ namespace ft {
 
     template <class _T1, class _T2>
     bool operator< (const ft::pair<_T1, _T2>& lhs, const ft::pair<_T1, _T2>& rhs) {
-        return lhs.first == rhs.first ? lhs.second < rhs.second : lhs.first < rhs.first;
+        return  lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second < rhs.second);
     }
 
     template <class _T1, class _T2>
     bool operator> (const ft::pair<_T1, _T2>& lhs, const ft::pair<_T1, _T2>& rhs) {
-        return lhs.first == rhs.first ? lhs.second > rhs.second : lhs.first > rhs.first;
+        return rhs < lhs;
     }
 
     template <class _T1, class _T2>
     bool operator<= (const ft::pair<_T1, _T2>& lhs, const ft::pair<_T1, _T2>& rhs) {
-        return !(lhs > rhs);
+        return !(rhs < lhs);
     }
 
     template <class _T1, class _T2>
