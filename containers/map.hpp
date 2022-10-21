@@ -14,13 +14,13 @@ namespace ft
             class Key,
             class T,
             class _Compare = std::less<Key>,
-            class _Alloc = std::allocator<ft::pair<Key, T> >
+            class _Alloc = std::allocator<ft::pair<const Key, T> >
     >
     class map {
         public :
             typedef Key                                                     key_type;
             typedef T                                                       mapped_type;
-            typedef ft::pair<Key, T>                                        value_type;
+            typedef ft::pair<const Key, T>                                  value_type;
             typedef _Compare                                                key_compare;
             typedef _Alloc                                                  allocator_type;
             typedef typename allocator_type::reference                      reference;
@@ -37,7 +37,7 @@ namespace ft
 
 
         private :
-            typedef ft::rbt_tree<key_type, value_type, _Compare, _Alloc>    _tree_type;
+            typedef ft::rbt_tree<key_type, mapped_type, _Compare, _Alloc>    _tree_type;
 
         protected :
 			class value_compare : public std::binary_function<value_type, value_type, bool> {
@@ -315,11 +315,12 @@ namespace ft
                 return value_compare(_Compare());
             }
 
-        private :
             void
             print_tree() {
                 _tree.print();
             }
+
+        private :
 
             void    _throw_out_of_range() const {
                 throw std::out_of_range("map");
