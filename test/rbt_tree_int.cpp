@@ -1,4 +1,6 @@
-#include "./containers/rbt_node.hpp"
+#include "./containers/rbt_tree.hpp"
+#include "./containers/pair.hpp"
+
 #include <iostream>
 
 #define TEST_NAMESPACE ft
@@ -34,28 +36,36 @@ void print_node_is_equal(TEST_NAMESPACE::rbt_node<T11, T12>& __n1, TEST_NAMESPAC
     print_split_line();
 }
 
-int test_node() {
-    ft::rbt_node<int, int> __n(42, 84);
-    ft::rbt_node<int, int> __n2(42, 84, NULL, TEST_NAMESPACE::RED);
-    print_node(__n);
-    print_node(__n2);
-    print_node_is_equal(__n, __n2);
-    
-    __n2.change_color(TEST_NAMESPACE::BLACK);
-    print_node(__n);
-    print_node(__n2);
-    print_node_is_equal(__n, __n2);
+int main() {
+    ft::rbt_tree<int, int, std::less<int>, std::allocator<ft::pair<int, int> > > __t;
 
-    __n._left = new ft::rbt_node<int, int>(13, 92);
-    __n._right = &__n2;
-    
-    print_node(__n);
-    print_node(__n2);
-    print_node(*__n._left);
-    print_node_is_equal(*__n._right, __n2);
+    __t.insert(TEST_NAMESPACE::make_pair(42, 84));
+    __t.insert(TEST_NAMESPACE::make_pair(13, 92));
+    __t.insert(TEST_NAMESPACE::make_pair(69, 96));
+    __t.insert(TEST_NAMESPACE::make_pair(1, 2));
+    __t.insert(TEST_NAMESPACE::make_pair(5, 10));
+    __t.insert(TEST_NAMESPACE::make_pair(7, 14));
+    __t.insert(TEST_NAMESPACE::make_pair(9, 18));
+    __t.insert(TEST_NAMESPACE::make_pair(11, 22));
+    __t.insert(TEST_NAMESPACE::make_pair(15, 30));
+    __t.insert(TEST_NAMESPACE::make_pair(17, 34));
+    __t.insert(TEST_NAMESPACE::make_pair(19, 38));
+    __t.insert(TEST_NAMESPACE::make_pair(21, 42));
+    __t.insert(TEST_NAMESPACE::make_pair(25, 50));
 
-    delete __n._left;
-    // system("leaks main");
+    
+
+    
+
+    __t.print();
+
+    __t.erase(13);
+    __t.erase(5);
+    __t.erase(9);
+    __t.erase(15);
+    __t.erase(21);
+
+    __t.print();
+    system("leaks main");
     return 0;
 }
-
