@@ -46,6 +46,11 @@ namespace ft {
                 this->_root = _nil;
             }
 
+            // rbt_tree() : _alloc(), _comp(key_compare()), _size(0), _root(_alloc.allocate(1)), _nil(_root)
+            // {
+            //     this->_nil = this->get_allocator().construct(this->_root, key_type(), mapped_type(), NULL, NIL);
+            // }
+
             ~rbt_tree() {
                 this->clear();
                 this->destroy_node(_nil);
@@ -103,7 +108,7 @@ namespace ft {
             }
 
             ft::pair<pointer, bool>
-            insert(ft::pair<key_type, mapped_type>& __x) {
+            insert(ft::pair<const key_type, mapped_type>& __x) {
                 pointer __prt = _nil;
                 pointer __cur = _root;
 
@@ -445,7 +450,10 @@ namespace ft {
                             __y->_parent->_right = __x;
                     }
 
-                    if (__y != __t) reassign_node_data(__y, __t);
+                    if (__y != __t) {
+                        delete __t->data;
+                        __t->data = new ft::pair<key_type, mapped_type>(__y->_value->_first, y->_value_second);
+                    }
                     if (is_black_node(__y)) rebalance_erase(__x);
                     this->destroy_node(__y);
                     _nil->_parent = maximum(_root);
@@ -468,15 +476,15 @@ namespace ft {
             void
             reassign_node_data(pointer __origin, pointer __copied) {
                 delete __copied->_value;
-                __copied->_value = new ft::pair<const Key, mapped_type>(__origin->_value->first, __origin->_value->second);
+                __copied->_value = new ft::pair<Key, mapped_type>(__origin->_value->first, __origin->_value->second);
             }
 
             pointer
-            create_node(key_type key, mapped_type value, pointer ptr, node_type color) {
+            create_node(key_type& key, mapped_type& value, pointer& ptr, node_type& color) {
                 pointer __tmp = this->get_allocator().allocate(1);
                 value_type __node(key, value, ptr, color);
                 try {
-                    this->get_allocator().construct(__tmp, __node);
+                    this->get_allocator().construct(__tmp, value_type(__node));
                 }
                 catch (...) {
                     this->get_allocator().deallocate(__tmp, 1);

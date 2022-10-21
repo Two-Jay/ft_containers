@@ -2,7 +2,7 @@
 #define __FT_CONTAINERS__MAP__
 
 #include "./rbt_tree.hpp"
-#include "./iterators.hpp"
+#include "./map_iterator.hpp"
 #include "./rbt_node.hpp"
 #include "./pair.hpp"
 #include <memory>
@@ -14,13 +14,13 @@ namespace ft
             class Key,
             class T,
             class _Compare = std::less<Key>,
-            class _Alloc = std::allocator<ft::pair<const Key, T> >
+            class _Alloc = std::allocator<ft::pair<Key, T> >
     >
     class map {
         public :
             typedef Key                                                     key_type;
             typedef T                                                       mapped_type;
-            typedef ft::pair<const Key, T>                                  value_type;
+            typedef ft::pair<Key, T>                                        value_type;
             typedef _Compare                                                key_compare;
             typedef _Alloc                                                  allocator_type;
             typedef typename allocator_type::reference                      reference;
@@ -125,10 +125,8 @@ namespace ft
             
             mapped_type&
             operator[] (const key_type& _k) {
-                iterator it = this->find(_k);
-                if (it == this->end())
-                    it = this->insert(ft::pair<Key, mapped_type>(_k, _tree.find(_k)->data->second));
-                return it->second;
+                ft::pair<iterator, bool> ret = this->insert(ft::make_pair(_k, _tree.find(_k)->_value->second));
+                return ret.first->second;
             }
 
             //     /*
@@ -228,13 +226,16 @@ namespace ft
 
             size_type
             erase(const key_type& _key) {
-                return _tree.erase(_key);
+                return _tree.erase(_key) ? 1 : 0;
             }
 
             void
             erase(iterator _first, iterator _last) {
-                while (_first != _last)
-                    erase(_first++);
+                key_type key;
+                for (; _first != _last; _first++) {
+                    key = _first->first;
+                    _tree.erase(key);
+                }
             }
 
             void
@@ -311,7 +312,7 @@ namespace ft
 
             value_compare
             value_comp() const {
-                return value_compare(_key_comp);
+                return value_compare(_Compare());
             }
 
         private :
@@ -329,52 +330,47 @@ namespace ft
             }
     };
 
-    #define _MAP_OPE_MACRO(OP) \
-        __x._tree OP __y._tree
-
     template <class _Key, class _T, class _Compare, class _Alloc>
     bool
     operator==(const map<_Key, _T, _Compare, _Alloc>& __x,
             const map<_Key, _T, _Compare, _Alloc>& __y) {
-        return _MAP_OPE_MACRO(==);
+        return __x.size() == __y.size() && ft::equal(__x.begin(), __x.end(), __y.begin());
     }
 
     template <class _Key, class _T, class _Compare, class _Alloc>
     bool
     operator!=(const map<_Key, _T, _Compare, _Alloc>& __x,
             const map<_Key, _T, _Compare, _Alloc>& __y) {
-        return _MAP_OPE_MACRO(!=);
+        return !(__x == __y);
     }
 
     template <class _Key, class _T, class _Compare, class _Alloc>
     bool
     operator<(const map<_Key, _T, _Compare, _Alloc>& __x,
             const map<_Key, _T, _Compare, _Alloc>& __y) {
-        return _MAP_OPE_MACRO(<);
+        return ft::lexicographical_compare(__x.begin(), __x.end(), __y.begin(), __y.end());
     }
 
     template <class _Key, class _T, class _Compare, class _Alloc>
     bool
     operator>(const map<_Key, _T, _Compare, _Alloc>& __x,
             const map<_Key, _T, _Compare, _Alloc>& __y) {
-        return _MAP_OPE_MACRO(>);
+        return __y < __x;
     }
 
     template <class _Key, class _T, class _Compare, class _Alloc>
     bool
     operator<=(const map<_Key, _T, _Compare, _Alloc>& __x,
             const map<_Key, _T, _Compare, _Alloc>& __y) {
-        return _MAP_OPE_MACRO(<=);
+        return !(__y < __x);
     }
 
     template <class _Key, class _T, class _Compare, class _Alloc>
     bool
     operator>=(const map<_Key, _T, _Compare, _Alloc>& __x,
             const map<_Key, _T, _Compare, _Alloc>& __y) {
-        return _MAP_OPE_MACRO(>=);
+        return !(__x < __y);
     }
-
-    #undef _MAP_OPE_MACRO
 
     template <class _Key, class _T, class _Compare, class _Alloc>
     void
