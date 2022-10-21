@@ -16,7 +16,8 @@ namespace ft {
 
             pair(const first_type& _a, const second_type& _b) : first(_a), second(_b) {};
 
-            pair(const pair& other) : first(other.first), second(other.second) {};
+            template <class _U1, class _U2>
+            pair(const pair<_U1, _U2>& other) : first(other.first), second(other.second) {};
 
             pair& operator= (const pair& other) {
                 if (this != &other) {
@@ -26,9 +27,11 @@ namespace ft {
                 return *this;
             };
 
-            // needed fix to delete
-            first_type& get_first() { return this->first; };
-            second_type& get_second() { return this->second; };
+            void
+            swap(pair& other) {
+                std::swap(this->first, other.first);
+                std::swap(this->second, other.second);
+            };
     };
 
     template <class _T1, class _T2>
