@@ -31,7 +31,7 @@ namespace ft
             typedef typename allocator_type::difference_type                difference_type;
 
             typedef ft::map_iterator<key_type, T, value_type*>              iterator;
-            typedef ft::const_map_iterator<key_type, T, const value_type*>  const_iterator;
+            typedef ft::const_map_iterator<key_type, T, value_type*>        const_iterator;
             typedef ft::reverse_iterator<iterator>                          reverse_iterator;
             typedef ft::reverse_iterator<const_iterator>                    const_reverse_iterator;
 
