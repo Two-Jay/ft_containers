@@ -1,17 +1,17 @@
-#ifndef __FT_CONTAINERS__MAP_ITERATOR__
-#define __FT_CONTAINERS__MAP_ITERATOR__
+#ifndef __FT_CONTAINERS__SET_ITERATOR__
+#define __FT_CONTAINERS__SET_ITERATOR__
 
-#include "rbt_node.hpp"
 #include "iterator_base.hpp"
+#include "rbt_node.hpp"
 
 
-namespace ft {
+namespace ft
+{
+    template <class T1, class T2, class _Iter>
+    class const_set_iterator;
 
     template <class T1, class T2, class _Iter>
-    class const_map_iterator;
-
-    template <class T1, class T2, class _Iter>
-    class map_iterator {
+    class set_iterator {
         public :
             typedef _Iter                                                           iterator_type;
             typedef ft::bidirectional_iterator_tag                                  iterator_category;
@@ -25,21 +25,21 @@ namespace ft {
             node_pointer   _nptr;
 
         public :
-			map_iterator() {}
+			set_iterator() {}
 
-			map_iterator(const node_pointer& __p, typename ft::enable_if<!ft::is_same<node_pointer, map_iterator>::value>::type* = 0) : _nptr(__p) {}
+			set_iterator(const node_pointer& __p, typename ft::enable_if<!ft::is_same<node_pointer, set_iterator>::value>::type* = 0) : _nptr(__p) {}
 
-			map_iterator(const map_iterator& __iter) : _nptr(__iter.base()) {};
+			set_iterator(const set_iterator& __iter) : _nptr(__iter.base()) {};
 
-            map_iterator&
-            operator=(const map_iterator& __x) {
+            set_iterator&
+            operator=(const set_iterator& __x) {
                 if (this != &__x) {
                     this->_nptr = __x.base();
                 }
                 return *this;
             }
 
-            ~map_iterator() {};
+            ~set_iterator() {};
 
             node_pointer
             base() const {
@@ -48,36 +48,36 @@ namespace ft {
 
             reference
             operator*() const {
-                return *(this->_nptr->_value);
+                return this->_nptr->_value->first;
             }
 
             pointer
             operator->() const {
-                return this->_nptr->_value;
+                return &(this->_nptr->_value->first);
             }
 
-            map_iterator&
+            set_iterator&
             operator++() {
                 this->_nptr = next(this->_nptr);
                 return *this;
             }
 
-            map_iterator
+            set_iterator
             operator++(int) {
-                map_iterator __tmp(*this);
+                set_iterator __tmp(*this);
                 this->_nptr = next(this->_nptr);
                 return __tmp;
             }
 
-            map_iterator&
+            set_iterator&
             operator--() {
                 this->_nptr = prev(this->_nptr);
                 return *this;
             }
 
-            map_iterator
+            set_iterator
             operator--(int) {
-                map_iterator __tmp(*this);
+                set_iterator __tmp(*this);
                 this->_nptr = prev(this->_nptr);
                 return __tmp;
             }
@@ -137,21 +137,21 @@ namespace ft {
 
         private :
 
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const map_iterator<T11, T12, _Iter1>&, const map_iterator<T21, T22, _Iter2>&);
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const map_iterator<T11, T12, _Iter1>&, const const_map_iterator<T21, T22, _Iter2>&);
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const const_map_iterator<T11, T12, _Iter1>&, const map_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const set_iterator<T11, T12, _Iter1>&, const set_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const set_iterator<T11, T12, _Iter1>&, const const_set_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const const_set_iterator<T11, T12, _Iter1>&, const set_iterator<T21, T22, _Iter2>&);
 
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const map_iterator<T11, T12, _Iter1>&, const map_iterator<T21, T22, _Iter2>&);
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const map_iterator<T11, T12, _Iter1>&, const const_map_iterator<T21, T22, _Iter2>&);
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const const_map_iterator<T11, T12, _Iter1>&, const map_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const set_iterator<T11, T12, _Iter1>&, const set_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const set_iterator<T11, T12, _Iter1>&, const const_set_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const const_set_iterator<T11, T12, _Iter1>&, const set_iterator<T21, T22, _Iter2>&);
 
             template<class, class, class, class> friend class rbt_tree;
 			template<class, class, class, class> friend class map;
-            template<class, class, class> friend class const_map_iterator;
+            template<class, class, class> friend class const_set_iterator;
     };
 
     template <class T1, class T2, class _Iter>
-    class const_map_iterator {
+    class const_set_iterator {
         public :
             typedef _Iter                                                           iterator_type;
             typedef ft::bidirectional_iterator_tag                                  iterator_category;
@@ -165,30 +165,29 @@ namespace ft {
             node_pointer   _nptr;
 
         public :
-			const_map_iterator() {}
+			const_set_iterator() {}
 
-			const_map_iterator(const node_pointer& __p, typename ft::enable_if<!ft::is_same<node_pointer, const_map_iterator>::value>::type* = 0) : _nptr(__p) {}
+			const_set_iterator(const node_pointer& __p, typename ft::enable_if<!ft::is_same<node_pointer, const_set_iterator>::value>::type* = 0) : _nptr(__p) {}
 
-            template <class _U>
-            const_map_iterator(const map_iterator<T1, T2, _U>& __x) : _nptr(__x.base()) {}
+            const_set_iterator(const set_iterator<T1, T2, _Iter>& __x) : _nptr(__x.base()) {}
 
-			const_map_iterator(const const_map_iterator& __iter) : _nptr(__iter.base()) {};
+			const_set_iterator(const const_set_iterator& __iter) : _nptr(__iter.base()) {};
 
-            const_map_iterator&
-            operator=(const const_map_iterator& __x) {
+            const_set_iterator&
+            operator=(const const_set_iterator& __x) {
                 if (this != &__x) {
                     this->_nptr = __x.base();
                 }
                 return *this;
             }
 
-            const_map_iterator&
-            operator=(const map_iterator<T1, T2, _Iter>& __x) {
+            const_set_iterator&
+            operator=(const set_iterator<T1, T2, _Iter>& __x) {
                 this->_nptr = __x.base();
                 return *this;
             }
 
-            ~const_map_iterator() {};
+            ~const_set_iterator() {};
 
             node_pointer
             base() const {
@@ -205,28 +204,28 @@ namespace ft {
                 return this->_nptr->_value;
             }
 
-            const_map_iterator&
+            const_set_iterator&
             operator++() {
                 this->_nptr = next(this->_nptr);
                 return *this;
             }
 
-            const_map_iterator
+            const_set_iterator
             operator++(int) {
-                const_map_iterator __tmp(*this);
+                const_set_iterator __tmp(*this);
                 this->_nptr = next(this->_nptr);
                 return __tmp;
             }
 
-            const_map_iterator&
+            const_set_iterator&
             operator--() {
                 this->_nptr = prev(this->_nptr);
                 return *this;
             }
 
-            const_map_iterator
+            const_set_iterator
             operator--(int) {
-                const_map_iterator __tmp(*this);
+                const_set_iterator __tmp(*this);
                 this->_nptr = prev(this->_nptr);
                 return __tmp;
             }
@@ -286,143 +285,143 @@ namespace ft {
 
         private :
 
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const const_map_iterator<T11, T12, _Iter1>&, const const_map_iterator<T21, T22, _Iter2>&);
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const map_iterator<T11, T12, _Iter1>&, const const_map_iterator<T21, T22, _Iter2>&);
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const const_map_iterator<T11, T12, _Iter1>&, const map_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const const_set_iterator<T11, T12, _Iter1>&, const const_set_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const set_iterator<T11, T12, _Iter1>&, const const_set_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator==(const const_set_iterator<T11, T12, _Iter1>&, const set_iterator<T21, T22, _Iter2>&);
 
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const const_map_iterator<T11, T12, _Iter1>&, const const_map_iterator<T21, T22, _Iter2>&);
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const map_iterator<T11, T12, _Iter1>&, const const_map_iterator<T21, T22, _Iter2>&);
-            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const const_map_iterator<T11, T12, _Iter1>&, const map_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const const_set_iterator<T11, T12, _Iter1>&, const const_set_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const set_iterator<T11, T12, _Iter1>&, const const_set_iterator<T21, T22, _Iter2>&);
+            template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2> friend bool operator<(const const_set_iterator<T11, T12, _Iter1>&, const set_iterator<T21, T22, _Iter2>&);
 
             template<class, class, class, class> friend class rbt_tree;
 			template<class, class, class, class> friend class map;
     };
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator==(const map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator==(const set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return __x.base() == __y.base();
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator==(const const_map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator==(const const_set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return __x.base() == __y.base();
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator==(const map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator==(const set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return __x.base() == __y.base();
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator==(const const_map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator==(const const_set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return __x.base() == __y.base();
     }
 
 
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator<(const map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator<(const set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return __x.base() < __y.base();
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator<(const const_map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator<(const const_set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return __x.base() < __y.base();
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator<(const map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator<(const set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return __x.base() < __y.base();
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator<(const const_map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator<(const const_set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return __x.base() < __y.base();
     }
 
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator!=(const map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator!=(const set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return !(__x == __y);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator!=(const const_map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator!=(const const_set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return !(__x == __y);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator!=(const map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator!=(const set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return !(__x == __y);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator!=(const const_map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator!=(const const_set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return !(__x == __y);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator>(const map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator>(const set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return __y < __x;
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator>(const const_map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator>(const const_set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return __y < __x;
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator>(const map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator>(const set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return __y < __x;
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator>(const const_map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator>(const const_set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return __y < __x;
     }
 
 
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator<=(const map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator<=(const set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return !(__y < __x);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator<=(const const_map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator<=(const const_set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return !(__y < __x);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator<=(const map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator<=(const set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return !(__y < __x);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator<=(const const_map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator<=(const const_set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return !(__y < __x);
     }
 
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator>=(const map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator>=(const set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return !(__x < __y);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator>=(const const_map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator>=(const const_set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return !(__x < __y);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator>=(const map_iterator<T11, T12, _Iter1>& __x, const const_map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator>=(const set_iterator<T11, T12, _Iter1>& __x, const const_set_iterator<T21, T22, _Iter2>& __y) {
         return !(__x < __y);
     }
 
     template <class T11, class T12, class T21, class T22, class _Iter1, class _Iter2>
-    bool operator>=(const const_map_iterator<T11, T12, _Iter1>& __x, const map_iterator<T21, T22, _Iter2>& __y) {
+    bool operator>=(const const_set_iterator<T11, T12, _Iter1>& __x, const set_iterator<T21, T22, _Iter2>& __y) {
         return !(__x < __y);
     }
 }
 
-#endif // __FT_CONTAINERS__MAP_ITERATOR__
+#endif // __FT_CONTAINERS__SET_ITERATOR__
