@@ -155,11 +155,11 @@ namespace ft
         pointer
         lower_bound(const key_type key) const
         {
-            if (_root != _nil)
+            if (!is_nil_node(_root))
             {
                 pointer node, ret;
 
-                for (node = _root, ret = _root; node != _nil;)
+                for (node = _root, ret = _root; !is_nil_node(node);)
                 {
                     if (key == node->_value->first)
                         return node;
@@ -179,11 +179,11 @@ namespace ft
         pointer
         upper_bound(const key_type key) const
         {
-            if (_root != _nil)
+            if (!is_nil_node(_root))
             {
                 pointer node, ret;
 
-                for (node = _root, ret = _root; node != _nil;)
+                for (node = _root, ret = _root; !is_nil_node(node);)
                 {
                     if (_comp(key, node->_value->first))
                     {
