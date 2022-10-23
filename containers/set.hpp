@@ -235,6 +235,15 @@ namespace ft
             equal_range(const key_type& key) const {
                 return ft::pair<const_iterator, const_iterator>(this->lower_bound(key), this->upper_bound(key));
             }
+
+        private :
+            void    _throw_out_of_range() const {
+                throw std::out_of_range("set");
+            }
+
+            void    _throw_length_error() const {
+                throw std::length_error("set");
+            }
     };
 
     template <class Key, class Compare, class Alloc>
