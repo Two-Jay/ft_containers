@@ -231,8 +231,9 @@ namespace ft
 
             void
             erase(iterator _first, iterator _last) {
-                for (; _first != _last; _first++) {
+                for (; _first != _last;) {
                     key_type key = _first->first;
+                    ++_first;
                     _tree.erase(key);
                 }
             }
